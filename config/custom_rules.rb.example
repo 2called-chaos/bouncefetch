@@ -1,0 +1,43 @@
+# Rules are easy to define:
+#
+#   - Rule accepts one argument which can be either
+#     * a string (performs downcased `include?` check)
+#     * a regex (performs `match` check)
+#   - Instead of passing a parameter you can pass a block, too.
+#     * it get's one argument (the mail object)
+#     * if the return value is truethy the rule is considered matched.
+#
+# Don't forget to take a look at the rules.rb which you extend with this file.
+Bouncefetch.rules do
+  # Each mail is required to match at least one crosscheck
+  # or it will be skipped. If you don't want this extra
+  # check just don't define any crosscheck.
+  #
+  # Please note that you will have to remove the crosschecks in `rules.rb` as well.
+  crosschecks do
+  end
+
+  type :ignore do
+    # rule :ignore_delayed_message_notifications do |mail|
+    #   mail.subject =~ /Warning: message (.*) delayed ([0-9]+) hours$/
+    # end
+  end
+
+  type :out_of_office do
+  end
+
+  type :quota_exceeded do
+  end
+
+  type :recipient_unknown do
+  end
+
+  type :permanently_rejected do
+  end
+
+  type :permanent_error do
+  end
+
+  type :misc_errors do
+  end
+end

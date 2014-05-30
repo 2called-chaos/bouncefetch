@@ -1,0 +1,93 @@
+Bouncefetch.configure do
+  # Header which identifies bounce emails and references a client.
+  # If you don't want or can't use this method be sure to review the
+  # search options at the bottom. See README.md for more info on this.
+  set :identification_header, "X-My-Unique-Ref-ID"
+
+  # IMAP search queries. Mails not matching any query won't be processed or deleted.
+  group :imap_search do
+    set :headers, [
+      ["HEADER", "X-Failed-Recipients", ""],
+      ["HEADER", "Auto-Submitted", "auto-replied"],
+      ["HEADER", "Auto-Submitted", "auto-replied (rejected)"],
+      ["HEADER", "Subject", "Delivery status notification"],
+      ["HEADER", "Subject", "Delivery Status Notification (Failure)"],
+      ["HEADER", "Subject", "Undelivered Mail Returned to Sender"],
+      ["HEADER", "Subject", "Returned mail: see transcript for details"],
+      ["HEADER", "Subject", "failure notice"],
+      ["HEADER", "Subject", "Mail delivery failed"],
+      ["HEADER", "Subject", "Unzustellbar:"],
+      ["HEADER", "From", "MAILER-DAEMON@"],
+      ["HEADER", "From", "postmaster@"],
+    ]
+  end
+
+  # IMAP account for which we want to process mails
+  group :imap do
+    set :hostname, "imap.gmail.com"
+    set :ssl,      true # default: false
+    # set :port,     993 # default is 143 for non-SSL and 993 for SSL
+    set :use_auth, false # try setting this to false if you keep getting ECONNREFUSED errors
+    set :username, "moep@gmail.com"
+    set :password, "asdasd"
+
+    # Remove successfully processed emails.
+    # There isn't really a reason to turn it off unless for testing.
+    set :remove_processed, true
+
+    # Mailboxes which should be processed (run with --mailboxes to get a list)
+    set :mailboxes, [
+      "INBOX",
+    ]
+  end
+
+
+  # Settings for the registry which keeps track of the clients.
+  group :registry do
+    set :file, "registry.dat"
+
+    # After how many days should we forget clients?
+    # Dont set this too high or temporary failures will accumulate.
+    # Dont set this too low or failures will never trigger your limits
+    # depending on how many emails you send.
+    set :client_lifetime, 30
+  end
+
+
+  # Decide how bounce types should be handled (leave/ignore/soft/hard)
+  #   leave => leave file despite setting
+  #   ignore => remove file (unless disabled) but ignore bounce in general
+  #   soft/hard => increase client bounce count
+  group :cause_mapping do
+    # ignore rule (custom only)
+    set :ignore, "ignore"
+
+    # out of office mails
+    set :out_of_office, "ignore"
+
+    # quota exceeded/full mailbox
+    set :quota_exceeded, "ignore"
+
+    # recipient not found
+    set :recipient_unknown, "hard"
+
+    # permanently rejected
+    set :permanently_rejected, "hard"
+
+    # other permanent errors
+    set :permanent_error, "hard"
+
+    # misc errors usually caused by misconfigured servers
+    set :misc_errors, "soft"
+  end
+
+
+  # Decide when a client should be treated as unreachable.
+  # The strategy can be "day" or "any". The former means that
+  # we treat multiple bounces per day as one bounce and with
+  # the latter we count all bounces. If you omit it we use "any".
+  group :limits do
+    set :soft, 4 => :day
+    set :hard, 1 => :any
+  end
+end
