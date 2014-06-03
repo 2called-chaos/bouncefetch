@@ -27,6 +27,7 @@ module Bouncefetch
       else
         plog "X", :red
         app.stats.send("unidentifyable_bounces", +1)
+        app.inspect_mail(self)
       end
     end
 
@@ -49,11 +50,13 @@ module Bouncefetch
     def nocrosscheck!
       plog "§", :blue
       app.stats.no_crosscheck_matched +1
+      app.inspect_mail(self)
     end
 
     def unmatched!
       plog "?", :blue
       app.stats.unhandled_mails +1
+      app.inspect_mail(self)
     end
 
     # try to find client candidates, not really sophisticated :)
@@ -79,10 +82,54 @@ module Bouncefetch
         rules = store[:rules] || []
         rules.each do |rule|
           result = [type, rule] if rule.match?(@raw)
+          break if result
+        end
+        break if result
+      end
+
+      result && cross_checks && result[1].crosscheck && !crosscheck_match? ? nil : result
+    end
+
+    def info
+      info_data = {}.tap do |r|
+        r["Subject"] = raw.subject
+        r["Multipart"] = raw.multipart?
+        if raw.multipart?
+          raw.parts.each_with_index do |p, i|
+            body = p.body.to_s
+            if ix = body.index("------ This is a copy of the message, including all the headers. ------")
+              r["Part #{i}"] = body[0..(ix-1)].strip
+            else
+              r["Part #{i}"] = body[0..500].strip
+            end
+          end
+        else
+          body = raw.body.to_s
+          if ix = body.index("------ This is a copy of the message, including all the headers. ------")
+            r["Body (snip)"] = body[0..(ix-1)].strip
+          else
+            r["Body (snip)"] = body[0..500].strip
+          end
         end
       end
 
-      result && cross_checks && !crosscheck_match? ? nil : result
+      longest_key = info_data.keys.map{|s| s.to_s.length }.max
+      info_data.each do |key, val|
+        val1, val2 = val
+        app.log app.c("#{key}: ".rjust(longest_key + 2, " "), :blue) << [app.c("#{val1}", val2 ? :magenta : :yellow), app.c("#{val2}", :yellow)].join(" ")
+      end
+      nil
+    end
+
+    def now?
+      app.reload_rules!
+      case m = match?
+        when nil then app.log app.c("rule matched but no crosscheck", :magenta)
+        when false then app.log app.c("no rule matches", :red)
+        else
+          type, rule = m
+          app.log app.c("yes, #{type}: #{rule.cond}", :green)
+      end
     end
   end
 end
