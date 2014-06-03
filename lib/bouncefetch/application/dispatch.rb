@@ -168,10 +168,11 @@ module Bouncefetch
       def dispatch_index
         load_configuration!
         load_registry!
+        enable_signal_trapping!
 
         graceful do
           mailboxes = cfg("imap.mailboxes")
-          connection # connect and authorize imap
+          connection # eager imap connect and authorize
 
           begin
             mailboxes.each_with_index do |mailbox, i|
