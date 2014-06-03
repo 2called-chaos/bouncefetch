@@ -10,6 +10,10 @@ module Bouncefetch
         !!@connection
       end
 
+      def muid_singleton
+        @muid_singleton ||= []
+      end
+
       def imap_connect
         imap, failed = nil, false
         logger.log_with_print do
@@ -35,7 +39,14 @@ module Bouncefetch
 
       def imap_search query, &block
         connection.uid_search(query).each do |message_id|
-          instance_exec(BBMail.new(self, message_id), &block)
+          begin
+            unless muid_singleton.include?(message_id)
+              muid_singleton << message_id
+              instance_exec(BBMail.new(self, message_id), &block)
+            end
+          rescue
+            warn "failed to load mail #{message_id} - #{$!.message}"
+          end
         end
       end
     end
