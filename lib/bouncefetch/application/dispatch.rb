@@ -125,7 +125,15 @@ module Bouncefetch
         load_configuration!
         load_registry!
 
-        puts "moep"
+        log_perform_failsafe("Loading statistics") { @registry_stats = @registry.stats }
+        longest_key = @registry_stats.keys.map{|s| s.to_s.length }.max
+
+        log ""
+        @registry_stats.each do |key, val|
+          val1, val2 = val
+          log c("#{key}: ".rjust(longest_key + 2, " "), :blue) << [c("#{val1}", val2 ? :magenta : :yellow), c("#{val2}", :yellow)].join(" ")
+        end
+        log ""
       end
 
       def dispatch_export

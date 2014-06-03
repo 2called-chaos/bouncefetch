@@ -68,6 +68,36 @@ module Bouncefetch
         @storage[candidate][:hits][mode.to_sym] << date.to_date.to_s
         @storage[candidate][:reasons][mode.to_sym] << rule.try(:cond).to_s if rule.try(:cond).to_s.present?
       end
+
+      def stats
+        {}.tap do |r|
+          r_tot = @storage.length
+          r_rea = reached_limit.length
+          r_inv = @storage.map{|c, d| d[:reasons][:soft] + d[:reasons][:hard] }.flatten.uniq.count
+          r_hbs = @storage.map{|c, d| d[:hits][:soft].count }.inject(&:+)
+          r_hbh = @storage.map{|c, d| d[:hits][:hard].count }.inject(&:+)
+          r_hbb = r_hbs + r_hbh
+
+          r["Candidates (total)"] = r_tot
+          r["Candidates (unreachable)"] = "#{r_rea}\t(#{(r_rea / r_tot.to_f * 100).round(2)}%)"
+          r["Involved rules"] = r_inv
+          r["Handled bounces"] = r_hbb
+          r["Handled bounces (soft)"] = "#{r_hbs}\t(#{(r_hbs / r_hbb.to_f * 100).round(2)}%)"
+          r["Handled bounces (hard)"] = "#{r_hbh}\t(#{(r_hbh / r_hbb.to_f * 100).round(2)}%)"
+
+          r["  "]  = ""
+          r[""]  = "=== TOP REASONS ==="
+          r[" "] = ""
+          top_reasons = {}.tap do |tr|
+            @storage.map{|c, d| d[:reasons][:soft] + d[:reasons][:hard] }.flatten.each do |reason|
+              tr[reason] ||= 0
+              tr[reason] += 1
+            end
+          end.sort_by {|reason, count| count }.reverse[0..14].each_with_index do |(reason, count), index|
+            r["#{index + 1}. #{count.to_s.rjust(6)} occurrences"] = reason
+          end
+        end
+      end
     end
   end
 end
