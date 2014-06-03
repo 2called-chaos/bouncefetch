@@ -1,9 +1,10 @@
 module Bouncefetch
   class Rule
-    attr_reader :cond
+    attr_reader :cond, :crosscheck
 
-    def initialize condition
+    def initialize condition, crosscheck = true
       @cond = condition
+      @crosscheck = crosscheck
     end
 
     def match? mail
