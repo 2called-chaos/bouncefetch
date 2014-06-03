@@ -9,7 +9,7 @@ module Bouncefetch
 
       def rule condition = nil, &block
         @current_store[:rules] ||= []
-        @current_store[:rules] << Rule.new(block || condition)
+        @current_store[:rules].unshift Rule.new(block || condition)
       end
     end
   end
