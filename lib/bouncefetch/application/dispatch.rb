@@ -14,15 +14,16 @@ module Bouncefetch
         end
       end
 
-      def graceful &block
+      def graceful opts = {}, &block
         begin
-          block.call
+          opts = { expunge: true }.merge(opts)
+          block.try(:call)
         ensure
           # graceful shutdown
           begin
             unless @opts[:simulate]
-              connection.expunge if connected?
-              @registry.try(:save)
+              log_perform_failsafe("Performing IMAP expunge...") { connection.expunge } if opts[:expunge] && connected?
+              log_perform_failsafe("Saving registry...") { @registry.save } if @registry
             end
           rescue ; end
           begin ; connection.logout if connected? ; rescue ; end
@@ -37,12 +38,13 @@ module Bouncefetch
           log "Config directory: " << c("#{ROOT}/config", :magenta)
           log ""
           log "Legend:"
-          log "  " << c("X", :green) << c(" handled mails")
-          log "  " << c("X", :red) << c(" handled but client not identifyable")
-          log "  " << c(".", :yellow) << c(" ignored")
-          log "  " << c("%", :red) << c(" deleted (follows ") << c("X", :green) << c(" or ") << c(".", :yellow) << c(")")
-          log "  " << c("?", :blue) << c(" unmatched")
-          log "  " << c("§", :blue) << c(" no matching crosscheck")
+          log "  " << c("X  ", :green) << c("handled mails")
+          log "  " << c("X  ", :red) << c("handled but client not identifyable")
+          log "  " << c(".  ", :yellow) << c("ignored")
+          log "  " << c("%  ", :red) << c("deleted (follows ") << c("X", :green) << c(" or ") << c(".", :yellow) << c(")")
+          log "  " << c("?  ", :blue) << c("unmatched")
+          log "  " << c("§  ", :blue) << c("no matching crosscheck")
+          log "  " << c("E  ", :magenta) << c("performing IMAP expunge (delete marked mails)")
         end
       end
 
@@ -92,7 +94,7 @@ module Bouncefetch
         load_configuration!
         load_registry!
 
-        graceful do
+        graceful expunge: false do
           items = registry.reached_limit
           if items.any?
             logger.log_without_timestr do
@@ -140,23 +142,26 @@ module Bouncefetch
         load_configuration!
         load_registry!
 
-        puts "moep"
+        graceful expunge: false do
+          puts "moep"
+        end
       end
 
       def dispatch_export_remote
         load_configuration!
         load_registry!
 
-        puts "moep"
+        graceful expunge: false do
+          puts "moep"
+        end
       end
 
       def dispatch_mailboxes
         load_configuration!
-        load_registry!
 
-        graceful do
+        graceful expunge: false do
           connection # connect and authorize imap
-          connection.list('*', '*').each{|m| log c("#{m.name}", :magenta) }
+          connection.list('', '*').each{|m| log c("#{m.name}", :magenta) }
         end
       end
 
@@ -166,9 +171,11 @@ module Bouncefetch
 
         graceful do
           connection # connect and authorize imap
-          log "Type " << c("exit", :magenta) << c(" to end the session.")
-          log "Type " << c("exit!", :magenta) << c(" to terminate session (escape loop). WARNING: No graceful shutdown!")
+          log "Type " << c("exit", :magenta) << c(" to gracefully end the session.")
+          log "Type " << c("exit!", :magenta) << c(" to terminate session (escape loop).") << c(" WARNING: No graceful shutdown!", :red)
+          log "Type " << c("graceful_exit!", :magenta) << c(" to gracefully terminate session (escape loop).")
           log "You have the following local variables: " << c("connection, config, registry, opts", :magenta)
+          log "You can save the registry with " << c("registry.save", :magenta) << c(" and reload it with ") << c("registry.load!", :magenta)
           binding.pry(quiet: true)
         end
       end
@@ -195,20 +202,27 @@ module Bouncefetch
                 end
               end
 
-              # search emails
               logger.log_with_print do
                 logger.log_without_timestr do
+                  # search emails
                   imap_search_headers.each do |query|
                     imap_search(query) do |mail|
+                      may_pause
+                      may_exit
+                      mid_expunge
                       handle_throttle
                       handle_mail(mail)
                     end
                   end
+
+                  # expunge before selecting another mailbox
+                  if !@opts[:simulate] && connected?
+                    log(c("E", :yellow))
+                    connection.expunge
+                    logger.raw "\b \b#{c("E", :magenta)}"
+                  end
                 end
               end
-
-              # pre expunge
-              connection.expunge if !@opts[:simulate] && connected?
             end
 
             log c("All finished!", :green)
