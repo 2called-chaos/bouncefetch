@@ -16,14 +16,14 @@ module Bouncefetch
 
       def graceful opts = {}, &block
         begin
-          opts = { expunge: true }.merge(opts)
+          opts = { expunge: true, registry: true }.merge(opts)
           block.try(:call)
         ensure
           # graceful shutdown
           begin
             unless @opts[:simulate]
               log_perform_failsafe("Performing IMAP expunge...") { connection.expunge } if opts[:expunge] && connected?
-              log_perform_failsafe("Saving registry...") { @registry.save } if @registry
+              log_perform_failsafe("Saving registry...") { @registry.save } if opts[:registry] && @registry
             end
           rescue ; end
           begin ; connection.logout if connected? ; rescue ; end
@@ -90,39 +90,6 @@ module Bouncefetch
         end
       end
 
-      def dispatch_list_candidates
-        load_configuration!
-        load_registry!
-
-        graceful expunge: false do
-          items = registry.reached_limit
-          if items.any?
-            logger.log_without_timestr do
-              log [
-                "reference",
-                "soft_bounces",
-                "hard_bounces",
-                "soft_bounce_dates",
-                "hard_bounce_dates",
-                "soft_bounce_reasons",
-                "hard_bounce_reasons",
-              ].join("|")
-              items.each do |candidate, data|
-                log [
-                  candidate,
-                  data[:hits][:soft].count,
-                  data[:hits][:hard].count,
-                  data[:hits][:soft].join("@@@"),
-                  data[:hits][:hard].join("@@@"),
-                  data[:reasons][:soft].join("@@@"),
-                  data[:reasons][:hard].join("@@@"),
-                ].join("|")
-              end
-            end
-          end
-        end
-      end
-
       def dispatch_statistics
         load_configuration!
         load_registry!
@@ -136,6 +103,29 @@ module Bouncefetch
           log c("#{key}: ".rjust(longest_key + 2, " "), :blue) << [c("#{val1}", val2 ? :magenta : :yellow), c("#{val2}", :yellow)].join(" ")
         end
         log ""
+      end
+
+      def dispatch_list_candidates
+        load_configuration!
+        load_registry!
+
+        graceful expunge: false, registry: false do
+          items = registry.reached_limit
+          if items.any?
+            log "Found " << c("#{items.count}", :magenta) << c(" candidates.")
+            logger.log_without_timestr do
+              candidates_to_array(items, opts[:export_columns]).each_with_index do |row, i|
+                if i == 0
+                  logger.raw row.map{|r| c(r, :blue) }.join(c("|", :red))
+                else
+                  logger.raw row.join(c("|", :red))
+                end
+              end
+            end
+          else
+            log "No candidates found."
+          end
+        end
       end
 
       def dispatch_export

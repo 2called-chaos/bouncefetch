@@ -99,6 +99,48 @@ module Bouncefetch
           @paused = false
         end
       end
+
+      def candidates_to_array candidates, rows = []
+        [].tap do |ary|
+          # header
+          header = [].tap do |r|
+            r << "reference"           if rows.include?("ref")
+            r << "soft_bounces"        if rows.include?("sbounces")
+            r << "hard_bounces"        if rows.include?("hbounces")
+            r << "soft_bounce_dates"   if rows.include?("sbounces_dates")
+            r << "hard_bounce_dates"   if rows.include?("hbounces_dates")
+            r << "soft_bounce_reasons" if rows.include?("sbounces_reasons")
+            r << "hard_bounce_reasons" if rows.include?("hbounces_reasons")
+          end
+          ary << header
+
+          # candidates
+          candidates.each do |candidate, data|
+            row = [].tap do |r|
+              r << candidate                         if rows.include?("ref")
+              r << data[:hits][:soft].count          if rows.include?("sbounces")
+              r << data[:hits][:hard].count          if rows.include?("hbounces")
+              r << data[:hits][:soft].join("@@@")    if rows.include?("sbounces_dates")
+              r << data[:hits][:hard].join("@@@")    if rows.include?("hbounces_dates")
+              r << data[:reasons][:soft].join("@@@") if rows.include?("sbounces_reasons")
+              r << data[:reasons][:hard].join("@@@") if rows.include?("hbounces_reasons")
+            end
+            ary << row
+          end
+        end
+      end
+
+      def candidates_to_csv candidates, rows = []
+        CSV.generate do |csv|
+          candidates_to_array(candidates, rows).each do |row|
+            csv << row
+          end
+        end
+      end
+
+      def candidates_to_json candidates, rows = []
+
+      end
     end
   end
 end

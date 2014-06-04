@@ -6,6 +6,7 @@ require "net/imap"
 require "mail"
 require "fileutils"
 require "date"
+require "csv"
 # require "digest/sha1"
 begin ; require "pry" ; rescue LoadError ; end
 
