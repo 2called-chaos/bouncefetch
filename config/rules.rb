@@ -1,3 +1,5 @@
+# Encoding: utf-8
+
 ##
 # You may not want to edit this file directly!
 # Better edit `custom_rules.rb` to extend this ruleset so you can easily update.

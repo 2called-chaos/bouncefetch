@@ -1,3 +1,4 @@
+# Encoding: utf-8
 module Bouncefetch
   class BBMail
     attr_reader :uid, :raw, :app
