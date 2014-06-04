@@ -1,8 +1,11 @@
+# Encoding: utf-8
+
 Bouncefetch.configure do
   # Header which identifies bounce emails and references a client.
   # If you don't want or can't use this method be sure to review the
   # search options at the bottom. See README.md for more info on this.
   set :identification_header, "X-My-Unique-Ref-ID"
+
 
   # IMAP search queries. Mails not matching any query won't be processed or deleted.
   group :imap_search do
@@ -22,18 +25,29 @@ Bouncefetch.configure do
     ]
   end
 
+
   # IMAP account for which we want to process mails
   group :imap do
-    set :hostname, "imap.gmail.com"
-    set :ssl,      true # default: false
-    # set :port,     993 # default is 143 for non-SSL and 993 for SSL
-    set :use_auth, false # try setting this to false if you keep getting ECONNREFUSED errors
+    set :hostname, "imap.example.com"
     set :username, "moep@gmail.com"
     set :password, "asdasd"
+    # set :ssl,      true # default: false
+    # set :port,     993 # default is 143 for non-SSL and 993 for SSL
+    # set :use_auth, false # try setting this to false if you keep getting ECONNREFUSED errors
 
-    # Remove successfully processed emails.
+    # Remove successfully processed emails (unless -d or --dryrun).
     # There isn't really a reason to turn it off unless for testing.
     set :remove_processed, true
+
+    # Define the amount of processed mails after which the script invokes the expunge command
+    # on the IMAP server which will delete emails flagged for deletion. If you're on gmail and
+    # have autodeletion activated this feature is useless and can be deactivated by setting the
+    # limit to 0.
+    #
+    # Set to 0 to disable expunge commands while processing (it will be called on exit).
+    #
+    # Note: When --dryrun is given no expunge will be invoked at all.
+    set :expunge_rate, 250
 
     # Mailboxes which should be processed (run with --mailboxes to get a list)
     set :mailboxes, [
@@ -59,7 +73,7 @@ Bouncefetch.configure do
   #   ignore => remove file (unless disabled) but ignore bounce in general
   #   soft/hard => increase client bounce count
   group :cause_mapping do
-    # ignore rule (custom only)
+    # ignore rule
     set :ignore, "ignore"
 
     # out of office mails

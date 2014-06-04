@@ -5,11 +5,13 @@
 #   - Rule accepts one argument which can be either
 #     * a string (performs downcased `include?` check)
 #     * a regex (performs `match` check)
+#     * anything to describe a passed block (optional)
 #   - Instead of passing a parameter you can pass a block, too.
 #     * it get's one argument (the mail object)
 #     * if the return value is truethy the rule is considered matched.
 #
-# Don't forget to take a look at the rules.rb which you extend with this file.
+# * Don't forget to take a look at the rules.rb which you extend with this file.
+# * You can add new custom types but don't forget to define a cause_mapping in config.rb
 Bouncefetch.rules do
   # Each mail is required to match at least one crosscheck
   # or it will be skipped. If you don't want this extra
