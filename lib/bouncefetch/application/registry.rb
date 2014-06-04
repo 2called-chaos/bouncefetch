@@ -24,7 +24,7 @@ module Bouncefetch
 
       def cleanup!
         @storage.each do |candidate, data|
-          @storage.delete(candidate) if (data[:updated_at] + @lifetime) < Date.today
+          remove(candidate) if (data[:updated_at] + @lifetime) < Date.today
         end
       end
 
@@ -67,6 +67,10 @@ module Bouncefetch
         @storage[candidate] ||= { reasons: { soft: [], hard: [] }, hits: { soft: [], hard: [] }, updated_at: Date.today }
         @storage[candidate][:hits][mode.to_sym] << date.to_date.to_s
         @storage[candidate][:reasons][mode.to_sym] << rule.try(:cond).to_s if rule.try(:cond).to_s.present?
+      end
+
+      def remove candidate
+        @storage.delete candidate
       end
 
       def stats

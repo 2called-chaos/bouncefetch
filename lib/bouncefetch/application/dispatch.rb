@@ -133,7 +133,30 @@ module Bouncefetch
         load_registry!
 
         graceful expunge: false do
-          puts "moep"
+          result_file = File.expand_path(opts[:remote])
+          items = registry.reached_limit
+          log "Found " << c("#{items.count}", :magenta) << c(" candidates.")
+
+          csv = log_perform_failsafe("Generating CSV") { candidates_to_csv(items, opts[:export_columns]) }
+
+          # check if file exists
+          if FileTest.exists?(result_file)
+            warn "Target file already exists!"
+            q = ask "Overwrite file? [yn]" until "#{q}".downcase.start_with?("y", "n")
+            exit 1 if q.downcase.start_with?("n")
+          end
+
+          # write to file
+          write_succeeded = false
+          log_perform_failsafe("Writing CSV to file") do
+            File.open(result_file, "wb") {|file| file.write(csv) }
+            write_succeeded = true
+          end
+          if !opts[:simulate] && write_succeeded
+            log_perform_failsafe("Removing candidates from registry") do
+              items.each {|candidate, _| registry.remove(candidate) }
+            end
+          end
         end
       end
 
