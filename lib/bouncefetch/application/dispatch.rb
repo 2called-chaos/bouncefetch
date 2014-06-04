@@ -31,6 +31,12 @@ module Bouncefetch
         end
       end
 
+      def dispatch_help_short
+        logger.log_without_timestr do
+          @optparse.to_s.split("\n").each(&method(:log))
+        end
+      end
+
       def dispatch_help
         logger.log_without_timestr do
           @optparse.to_s.split("\n").each(&method(:log))

@@ -63,7 +63,7 @@ module Bouncefetch
           @optparse.parse!(@argv)
         rescue OptionParser::ParseError => e
           abort(e.message)
-          dispatch(:help)
+          dispatch(:help_short)
           exit 1
         end
       end
