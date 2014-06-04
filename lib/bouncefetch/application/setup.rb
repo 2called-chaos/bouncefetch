@@ -28,22 +28,35 @@ module Bouncefetch
 
       def parse_params
         @optparse = OptionParser.new do |opts|
-          opts.banner = "Usage: bouncefetch [options]"
+          opts.banner = "\n    Usage: bouncefetch [options]"
 
+          # general settings
+          opts.separator("")
+          opts.separator(c("    # General settings", :blue))
+          opts.on("-d", "--dryrun", "Don't alter IMAP account or registry") { @opts[:simulate] = true }
+          opts.on("-m", "--monochrome", "Don't colorize output") { logger.colorize = false }
+          opts.on("-t", "--throttle-ignore", "Disable IMAP throttle detection") { @opts[:throttle_detect] = false }
+          opts.on("-i", "--inspect", "Open pry shell for every mail which is unidentifyable, unmatched or has", "no matching crosscheck. Use --shell beforehand to get more help on pry.") { @opts[:inspect] = true }
+
+
+          # stats / export
+          opts.separator("")
+          opts.separator(c("    # Registry & Export", :blue))
           opts.on("-s", "--statistics", "show statistics about the registry and candidates") { @opts[:dispatch] = :statistics }
-          opts.on("-c", "--candidates", "list unsubscribe candidates") { @opts[:dispatch] = :list_candidates }
-          opts.on("-e", "--export FILE", String, "export unsubscribe candidates to file and remove them from the registry") {|f| @opts[:dispatch] = :export ; @opts[:remote] = f }
+          opts.on("-c", "--candidates", "list unsubscribe candidates (use export to get csv)") { @opts[:dispatch] = :list_candidates }
+          opts.on("-e", "--export FILE", String, "export unsubscribe candidates to file and remove them from the registry", "use with --dryrun to not alter registry (same for --remote)") {|f| @opts[:dispatch] = :export ; @opts[:remote] = f }
           opts.on("-r", "--remote RESOURCE", String, "post unsubscribe candidates to URL and remove them from the registry") {|f| @opts[:dispatch] = :export_remote ; @opts[:remote] = f }
           opts.on("-o", "--output col1,col2", Array, "columns to include for --candidates --export --remote", "default: ref,sbounces,hbounces,sbounces_dates,hbounces_dates,sbounces_reasons,hbounces_reasons") {|f| @opts[:export_columns] = f }
-          opts.on("-d", "--dryrun", "Don't alter IMAP account or registry") { @opts[:simulate] = true }
-          opts.on("-t", "--throttle-ignore", "Disable IMAP throttle detection") { @opts[:throttle_detect] = false }
-          opts.on("-m", "--monochrome", "Don't colorize output") { logger.colorize = false }
+
+
+          # misc actions
+          opts.separator("")
+          opts.separator(c("    # Miscellaneous", :blue))
           opts.on("-h", "--help", "Shows this help") { @opts[:dispatch] = :help }
           opts.on("-v", "--version", "Shows version and other info") { @opts[:dispatch] = :info }
           opts.on("-z", "Do not check for updates on GitHub (with -v/--version)") { @opts[:check_for_updates] = false }
           opts.on("--mailboxes", "List all availables mailboxes in your IMAP account") { @opts[:dispatch] = :mailboxes }
           opts.on("--shell", "Open pry shell (requires pry gem)") { @opts[:dispatch] = :shell }
-          opts.on("-i", "--inspect", "Open pry shell for every mail which is unidentifyable, unmatched or has", "no matching crosscheck. Use --shell beforehand to get more help on pry.") { @opts[:inspect] = true }
         end
 
         begin
