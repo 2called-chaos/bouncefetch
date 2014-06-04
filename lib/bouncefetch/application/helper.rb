@@ -38,15 +38,17 @@ module Bouncefetch
       end
 
       def log_perform_failsafe what, &block
+        ret = nil
         logger.log_with_print do
           log "#{what} "
           begin
-            block.call
+            ret = block.call
             logger.raw c("DONE", :green)
           rescue
             logger.raw c("FAILED (#{$!.message.strip})", :red)
           end
         end
+        ret
       end
 
       def inspect_mail mail
