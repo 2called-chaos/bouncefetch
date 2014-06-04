@@ -45,7 +45,7 @@ module Bouncefetch
           opts.on("-s", "--statistics", "show statistics about the registry and candidates") { @opts[:dispatch] = :statistics }
           opts.on("-c", "--candidates", "list unsubscribe candidates (use export to get csv)") { @opts[:dispatch] = :list_candidates }
           opts.on("-e", "--export FILE", String, "export unsubscribe candidates to file and remove them from the registry", "use with --dryrun to not alter registry (same for --remote)") {|f| @opts[:dispatch] = :export ; @opts[:remote] = f }
-          opts.on("-r", "--remote RESOURCE", String, "post unsubscribe candidates to URL and remove them from the registry") {|f| @opts[:dispatch] = :export_remote ; @opts[:remote] = f }
+          opts.on("-r", "--remote RESOURCE", String, "post unsubscribe candidates to URL and remove them from the registry", "refer to the readme for information about how we post the data") {|f| @opts[:dispatch] = :export_remote ; @opts[:remote] = f }
           opts.on("-o", "--output col1,col2", Array, "columns to include for --candidates --export --remote", "default: ref,sbounces,hbounces,sbounces_dates,hbounces_dates,sbounces_reasons,hbounces_reasons") {|f| @opts[:export_columns] = f }
 
 
@@ -56,7 +56,7 @@ module Bouncefetch
           opts.on("-v", "--version", "Shows version and other info") { @opts[:dispatch] = :info }
           opts.on("-z", "Do not check for updates on GitHub (with -v/--version)") { @opts[:check_for_updates] = false }
           opts.on("--mailboxes", "List all availables mailboxes in your IMAP account") { @opts[:dispatch] = :mailboxes }
-          opts.on("--shell", "Open pry shell (requires pry gem)") { @opts[:dispatch] = :shell }
+          opts.on("--shell", "Open pry shell") { @opts[:dispatch] = :shell }
         end
 
         begin
