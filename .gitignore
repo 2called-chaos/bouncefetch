@@ -1,0 +1,9 @@
+/.bundle
+
+# Ignore all logfiles and tempfiles.
+/log/*.log
+/log/**/*.log
+/tmp
+/config/config.rb
+/config/custom_rules.rb
+/registry*.dat
