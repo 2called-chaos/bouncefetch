@@ -1,13 +1,12 @@
 require "pathname"
 require "optparse"
-require "securerandom"
 require "ostruct"
-require "net/imap"
-require "mail"
 require "fileutils"
 require "date"
+require "json"
 require "csv"
-# require "digest/sha1"
+require "net/imap"
+require "mail"
 begin ; require "pry" ; rescue LoadError ; end
 
 module Bouncefetch

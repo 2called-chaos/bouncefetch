@@ -171,7 +171,22 @@ module Bouncefetch
         load_registry!
 
         graceful expunge: false do
-          puts "moep"
+          items = registry.reached_limit
+          log "Found " << c("#{items.count}", :magenta) << c(" candidates.")
+
+          # Post to remote
+          post_succeeded = false
+          log_perform_failsafe("POSTing data to remote endpoint...") do
+            res = Net::HTTP.post_form URI(opts[:remote]), { "candidates" => candidates_to_json(items, opts[:export_columns]) }
+            raise "server responded with status code #{res.code}" if res.code.to_i != 200
+            post_succeeded = true
+          end
+
+          if !opts[:simulate] && post_succeeded
+            log_perform_failsafe("Removing candidates from registry") do
+              items.each {|candidate, _| registry.remove(candidate) }
+            end
+          end
         end
       end
 

@@ -141,7 +141,19 @@ module Bouncefetch
       end
 
       def candidates_to_json candidates, rows = []
-
+        items = {}
+        candidates.each do |candidate, data|
+          items[candidate] = {}.tap do |r|
+            r["reference"] = candidate if rows.include?("ref")
+            r["soft_bounces"] = data[:hits][:soft].count if rows.include?("sbounces")
+            r["hard_bounces"] = data[:hits][:hard].count if rows.include?("hbounces")
+            r["soft_bounce_dates"] = data[:hits][:soft] if rows.include?("sbounces_dates")
+            r["hard_bounce_dates"] = data[:hits][:hard] if rows.include?("hbounces_dates")
+            r["soft_bounce_reasons"] = data[:reasons][:soft] if rows.include?("sbounces_reasons")
+            r["hard_bounce_reasons"] = data[:reasons][:hard] if rows.include?("hbounces_reasons")
+          end
+        end
+        JSON.generate(items)
       end
     end
   end
