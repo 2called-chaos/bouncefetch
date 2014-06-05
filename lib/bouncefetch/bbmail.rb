@@ -24,7 +24,7 @@ module Bouncefetch
         plog "X", :green
         app.stats.send("handled_#{mode}_bounces", +1)
         app.registry.handle(candidate, mode, raw.date, rule)
-        delete! if app.cfg("imap.remove_processed")
+        delete! if app.cfg("general.remove_processed")
       else
         plog "X", :red
         app.stats.send("unidentifyable_bounces", +1)
@@ -35,7 +35,7 @@ module Bouncefetch
     def ignore! delete = true
       plog "."
       app.stats.ignored_mails +1
-      delete! if delete && app.cfg("imap.remove_processed")
+      delete! if delete && app.cfg("general.remove_processed")
     end
 
     def delete! expunge = false

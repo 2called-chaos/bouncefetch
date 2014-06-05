@@ -7,9 +7,38 @@ Bouncefetch.configure do
   set :identification_header, "X-My-Unique-Ref-ID"
 
 
-  # IMAP search queries. Mails not matching any query won't be processed or deleted.
-  group :imap_search do
-    set :headers, [
+  # General settings (application behaviour, debug, etc.)
+  group :general do
+    # Remove successfully processed emails (unless -d or --dryrun).
+    # There isn't really a reason to turn it off unless for testing.
+    set :remove_processed, true
+
+    # Define the amount of processed mails after which the script invokes the expunge command
+    # on the IMAP server which will delete emails flagged for deletion.
+    #
+    # Set to 0 to disable expunge commands while processing (it will be called on exit or mailbox
+    # change anyway. When --dryrun is given no expunge will be invoked at all.
+    set :expunge_rate, 250
+  end
+
+
+  # IMAP account and search settings
+  group :imap do
+    set :hostname, "imap.example.com"
+    set :username, "moep@example.com"
+    set :password, "asdasd"
+    # set :ssl,      true # default: false
+    # set :port,     993 # default is 143 for non-SSL and 993 for SSL
+    # set :use_auth, false # try setting this to false if you keep getting ECONNREFUSED errors
+
+    # Mailboxes which should be processed (run with --mailboxes to get a list)
+    set :mailboxes, [
+      "INBOX",
+    ]
+
+    # IMAP search queries. Mails not matching any query won't be processed or deleted.
+    # Feel free to add or remove entries and consider contributing it to the project.
+    set :queries, [
       ["HEADER", "X-Failed-Recipients", ""],
       ["HEADER", "Auto-Submitted", "auto-replied"],
       ["HEADER", "Auto-Submitted", "auto-replied (rejected)"],
@@ -22,36 +51,6 @@ Bouncefetch.configure do
       ["HEADER", "Subject", "Unzustellbar:"],
       ["HEADER", "From", "MAILER-DAEMON@"],
       ["HEADER", "From", "postmaster@"],
-    ]
-  end
-
-
-  # IMAP account for which we want to process mails
-  group :imap do
-    set :hostname, "imap.example.com"
-    set :username, "moep@gmail.com"
-    set :password, "asdasd"
-    # set :ssl,      true # default: false
-    # set :port,     993 # default is 143 for non-SSL and 993 for SSL
-    # set :use_auth, false # try setting this to false if you keep getting ECONNREFUSED errors
-
-    # Remove successfully processed emails (unless -d or --dryrun).
-    # There isn't really a reason to turn it off unless for testing.
-    set :remove_processed, true
-
-    # Define the amount of processed mails after which the script invokes the expunge command
-    # on the IMAP server which will delete emails flagged for deletion. If you're on gmail and
-    # have autodeletion activated this feature is useless and can be deactivated by setting the
-    # limit to 0.
-    #
-    # Set to 0 to disable expunge commands while processing (it will be called on exit).
-    #
-    # Note: When --dryrun is given no expunge will be invoked at all.
-    set :expunge_rate, 250
-
-    # Mailboxes which should be processed (run with --mailboxes to get a list)
-    set :mailboxes, [
-      "INBOX",
     ]
   end
 

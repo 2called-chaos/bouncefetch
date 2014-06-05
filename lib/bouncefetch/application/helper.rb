@@ -6,7 +6,7 @@ module Bouncefetch
           if idh = cfg("identification_header")
             r << ["HEADER", idh, ""]
           end
-          cfg("imap_search.headers").each do |a, b, c|
+          cfg("imap.queries").each do |a, b, c|
             r << [a, b, c || ""]
           end
         end
@@ -25,11 +25,11 @@ module Bouncefetch
       end
 
       def mid_expunge
-        return if @opts[:simulate] || cfg("imap.expunge_rate") == 0
+        return if @opts[:simulate] || cfg("general.expunge_rate") == 0
         @mid_expunge ||= 0
         @mid_expunge += 1
 
-        if @mid_expunge > cfg("imap.expunge_rate") && connected?
+        if @mid_expunge > cfg("general.expunge_rate") && connected?
           log(c("E", :yellow))
           connection.expunge
           logger.raw "\b \b#{c("E", :magenta)}"
