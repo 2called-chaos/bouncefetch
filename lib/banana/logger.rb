@@ -135,7 +135,7 @@ module Banana
         begin
           block.call
         ensure
-          puts if clear && @logged > 0
+          raw(nil, :puts) if clear && @logged > 0
         end
       end
     end
