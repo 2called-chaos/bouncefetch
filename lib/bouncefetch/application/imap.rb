@@ -28,7 +28,7 @@ module Bouncefetch
               imap.login(cfg("imap.username"), cfg("imap.password"))
             end
             logger.raw c("DONE", :green)
-          rescue Errno::ECONNREFUSED, Net::IMAP::NoResponseError
+          rescue Errno::ECONNREFUSED, Net::IMAP::NoResponseError, SocketError
             failed = true
             logger.raw c("FAILED (#{$!.message.strip})", :red)
           end
