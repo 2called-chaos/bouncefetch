@@ -5,3 +5,4 @@
 /config/config.rb
 /config/custom_rules.rb
 /registry*.dat
+/vendor/bundle
