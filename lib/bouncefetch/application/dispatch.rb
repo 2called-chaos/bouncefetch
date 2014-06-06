@@ -225,35 +225,39 @@ module Bouncefetch
 
           begin
             mailboxes.each_with_index do |mailbox, i|
+              selected = false
               # select mailbox
               logger.log_with_print do
                 log "Selecting #{i+1}/#{mailboxes.count} " << c("#{mailbox}", :magenta) << c("... ")
                 begin
                   connection.select(mailbox)
                   logger.raw c("OK", :green)
+                  selected = true
                 rescue Net::IMAP::NoResponseError
                   logger.raw c("FAILED (#{$!.message.strip})", :red)
                 end
               end
 
-              logger.log_with_print do
-                logger.log_without_timestr do
-                  # search emails
-                  imap_search_headers.each do |query|
-                    imap_search(query) do |mail|
-                      may_pause
-                      may_exit
-                      mid_expunge
-                      handle_throttle
-                      handle_mail(mail)
+              if selected
+                logger.log_with_print do
+                  logger.log_without_timestr do
+                    # search emails
+                    imap_search_headers.each do |query|
+                      imap_search(query) do |mail|
+                        may_pause
+                        may_exit
+                        mid_expunge
+                        handle_throttle
+                        handle_mail(mail)
+                      end
                     end
-                  end
 
-                  # expunge before selecting another mailbox
-                  if !@opts[:simulate] && connected?
-                    log(c("E", :yellow))
-                    connection.expunge
-                    logger.raw "\b \b#{c("E", :magenta)}"
+                    # expunge before selecting another mailbox
+                    if !@opts[:simulate] && connected?
+                      log(c("E", :yellow))
+                      connection.expunge
+                      logger.raw "\b \b#{c("E", :magenta)}"
+                    end
                   end
                 end
               end
