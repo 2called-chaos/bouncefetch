@@ -10,7 +10,7 @@ of failed recipients which you can export to do whatever you want (unsubscribe, 
 ## Features
 
 * easy and flexible configuration
-* classifies bounces with the build-in rules (custom ones are easily added)
+* classifies bounces with the [build-in rules](https://github.com/2called-chaos/bouncefetch/blob/master/config/rules.rb) (custom ones are easily added)
 * maintains an exportable database of failed recipients and their causes (no actual database required)
 * export to CSV file or post to remote http(s) endpoint (perfect for automatisation)
 * interactive inspect mode to define new rules
