@@ -1,4 +1,4 @@
-# Bouncefetch [version][![version 0.1.0](http://img.shields.io/badge/version-0.1.0-brightgreen.svg)] [license][![MIT License](http://img.shields.io/badge/license-MIT-yellowgreen.svg)] [![have faith!](http://img.shields.io/badge/coverage-have%20faith!-blue.svg)](http://www.troll.me/images/faith-fall/have-faith-weve-only-dropped-two-people-so-far.jpg) [![weather sunny](http://img.shields.io/badge/weather-sunny-yellow.svg)](http://i1.ytimg.com/vi/2e6BwPAvopY/maxresdefault.jpg)
+# Bouncefetch [![version 0.1.0](http://img.shields.io/badge/version-0.1.0-brightgreen.svg)](https://github.com/2called-chaos/bouncefetch/blob/master/VERSION) [![MIT License](http://img.shields.io/badge/license-MIT-yellowgreen.svg)](https://github.com/2called-chaos/bouncefetch/blob/master/LICENSE.txt) [![have faith!](http://img.shields.io/badge/coverage-have%20faith!-blue.svg)](http://www.troll.me/images/faith-fall/have-faith-weve-only-dropped-two-people-so-far.jpg) [![weather sunny](http://img.shields.io/badge/weather-sunny-yellow.svg)](http://i1.ytimg.com/vi/2e6BwPAvopY/maxresdefault.jpg)
 
 ***"bounces should be read by humans"* – we don't think so!**
 
@@ -217,4 +217,4 @@ If you want to contribute code directly:
 ## License
 
 Copyright © 2014 Sven Pachnit (sven@bmonkeys.net).<br>
-Released under the MIT License, see [LICENSE][license] for details.
+Released under the MIT License, see [LICENSE.txt](https://github.com/2called-chaos/bouncefetch/blob/master/LICENSE.txt) for details.
