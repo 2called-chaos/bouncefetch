@@ -5,7 +5,7 @@
 Bouncefetch is a Ruby CLI application which searches an IMAP account for bounce mails, categorizes them and maintains a list
 of failed recipients which you can export to do whatever you want (unsubscribe, require reconfirmation, etc.).
 
-
+![screenshot](http://blog.bmonkeys.net/attach/cc86b1d570414e42ae6f851187d82d73/original_bouncefetch.png)
 
 ## Features
 
