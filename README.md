@@ -31,7 +31,7 @@ of failed recipients which you can export to do whatever you want (unsubscribe, 
 
 Choose and cd into the directory where you want to install Bouncefetch and clone the project:
 
-    cd /opt/bouncefetch
+    cd /opt
     git clone https://github.com/2called-chaos/bouncefetch.git
     cd bouncefetch
 
@@ -218,3 +218,12 @@ If you want to contribute code directly:
 
 Copyright © 2014 Sven Pachnit (sven@bmonkeys.net).<br>
 Released under the MIT License, see [LICENSE.txt](https://github.com/2called-chaos/bouncefetch/blob/master/LICENSE.txt) for details.
+
+
+
+## More from bmonkeys
+
+* http://blog.bmonkeys.net
+* https://de.gamesplanet.com
+* https://github.com/2called-chaos/dle    Directory List Edit – Edit file structures in your favorite editor!
+* https://github.com/2called-chaos/ts3r   A little framework to build teamspeak 3 bots.
