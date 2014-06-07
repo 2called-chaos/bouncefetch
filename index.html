@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <title>Bouncefetch by 2called-chaos</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Bouncefetch</h1>
+        <h2>Bouncefetch is a Ruby CLI application which searches an IMAP account for bounce mails, categorizes them and maintains a list of failed recipients which you can export to do whatever you want (unsubscribe, require reconfirmation, etc.).</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/2called-chaos/bouncefetch/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/2called-chaos/bouncefetch/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/2called-chaos/bouncefetch" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1>
+<a name="bouncefetch----" class="anchor" href="#bouncefetch----"><span class="octicon octicon-link"></span></a>Bouncefetch <a href="https://github.com/2called-chaos/bouncefetch/blob/master/VERSION"><img src="http://img.shields.io/badge/version-0.1.1-brightgreen.svg" alt="version 0.1.1"></a> <a href="https://github.com/2called-chaos/bouncefetch/blob/master/LICENSE.txt"><img src="http://img.shields.io/badge/license-MIT-yellowgreen.svg" alt="MIT License"></a> <a href="http://www.troll.me/images/faith-fall/have-faith-weve-only-dropped-two-people-so-far.jpg"><img src="http://img.shields.io/badge/coverage-have%20faith!-blue.svg" alt="have faith!"></a> <a href="http://i1.ytimg.com/vi/2e6BwPAvopY/maxresdefault.jpg"><img src="http://img.shields.io/badge/weather-sunny-yellow.svg" alt="weather sunny"></a>
+</h1>
+
+<p><strong><em>"bounces should be read by humans"</em> – we don't think so!</strong></p>
+
+<p>Bouncefetch is a Ruby CLI application which searches an IMAP account for bounce mails, categorizes them and maintains a list
+of failed recipients which you can export to do whatever you want (unsubscribe, require reconfirmation, etc.).</p>
+
+<p><img src="http://blog.bmonkeys.net/attach/cc86b1d570414e42ae6f851187d82d73/original_bouncefetch.png" alt="screenshot"></p>
+
+<h2>
+<a name="features" class="anchor" href="#features"><span class="octicon octicon-link"></span></a>Features</h2>
+
+<ul>
+<li>easy and flexible configuration</li>
+<li>classifies bounces with the <a href="https://github.com/2called-chaos/bouncefetch/blob/master/config/rules.rb">build-in rules</a> (custom ones are easily added)</li>
+<li>maintains an exportable database of failed recipients and their causes (no actual database required)</li>
+<li>export to CSV file or post to remote http(s) endpoint (perfect for automatisation)</li>
+<li>interactive inspect mode to define new rules</li>
+<li>few dependencies (ruby and the mail gem (pry is optional))</li>
+</ul><h2>
+<a name="requirements" class="anchor" href="#requirements"><span class="octicon octicon-link"></span></a>Requirements</h2>
+
+<ul>
+<li>Git (optional if you download the archive instead of cloning the repository)</li>
+<li>Ruby &gt;= 1.9.3 (2.0 highly recommended!)</li>
+<li>
+<a href="http://bundler.io">Bundler</a> gem (<code>gem install bundler</code>)</li>
+<li>IMAP credentials</li>
+</ul><h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Choose and cd into the directory where you want to install Bouncefetch and clone the project:</p>
+
+<pre><code>cd /opt
+git clone https://github.com/2called-chaos/bouncefetch.git
+cd bouncefetch
+</code></pre>
+
+<p>Copy the sample configuration and edit it to your needs (see Configuration):</p>
+
+<pre><code>cp config/config.rb.example config/config.rb
+vim config/config.rb
+</code></pre>
+
+<p>If you want to define custom rules (and you want, sooner or later) do the same with the example rule file.
+It just contains comments so you don't have to bother with it for now.</p>
+
+<pre><code>cp config/custom_rules.rb.example config/custom_rules.rb
+</code></pre>
+
+<p>Install dependencies:</p>
+
+<pre><code>bundle install
+</code></pre>
+
+<p><strong>Optionally:</strong> Make the executable available in your $PATH by either</p>
+
+<ul>
+<li>adding <code>/opt/bouncefetch/bin</code> (or whatever you have choosen) to your path (<strong>recommended</strong>)<br><a href="http://askubuntu.com/questions/60218/how-to-add-a-directory-to-my-path">» How to add a directory to my path</a>
+</li>
+<li>symlinking the executable<br><code>ln -s /opt/bouncefetch/bin/bouncefetch /usr/local/bin/bouncefetch</code>
+</li>
+</ul><h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<pre><code>Usage: bouncefetch [options]
+
+# General settings
+-d, --dryrun                     Don't alter IMAP account or registry
+-m, --monochrome                 Don't colorize output
+-t, --throttle-ignore            Disable IMAP throttle detection
+-i, --inspect                    Open pry shell for every mail which is unidentifyable, unmatched or has
+                                 no matching crosscheck. Use --shell beforehand to get more help on pry.
+
+# Registry &amp; Export
+-s, --statistics                 show statistics about the registry and candidates
+-c, --candidates                 list unsubscribe candidates (use export to get csv)
+-e, --export FILE                export unsubscribe candidates to file and remove them from the registry
+                                 use with --dryrun to not alter registry (same for --remote)
+-r, --remote RESOURCE            post unsubscribe candidates to URL and remove them from the registry
+                                 refer to the readme for information about how we post the data
+-o, --output col1,col2           columns to include for --candidates --export --remote
+                                 default: ref,sbounces,hbounces,sbounces_dates,hbounces_dates,sbounces_reasons,hbounces_reasons
+
+# Miscellaneous
+-h, --help                       Shows this help
+-v, --version                    Shows version and other info
+-z                               Do not check for updates on GitHub (with -v/--version)
+    --mailboxes                  List all availables mailboxes in your IMAP account
+    --shell                      Open pry shell
+</code></pre>
+
+<h2>
+<a name="configuration" class="anchor" href="#configuration"><span class="octicon octicon-link"></span></a>Configuration</h2>
+
+<h3>
+<a name="configrb--identification_header" class="anchor" href="#configrb--identification_header"><span class="octicon octicon-link"></span></a>config.rb » identification_header</h3>
+
+<p>When a mail bounces you typically get a copy of the original mail you've send. To identify the user it is best to add a custom header to all mails you send out.
+If your users have the ability to change their email addresses it would be a good idea to set this header to the user database id or some kind of token.</p>
+
+<p>If you can't or don't want to use this you can leave it blank and bouncefetch will try to determine it by other means.</p>
+
+<h3>
+<a name="defining-rules" class="anchor" href="#defining-rules"><span class="octicon octicon-link"></span></a>Defining rules</h3>
+
+<p>Rules are pretty easy to define. You should add them to <code>custom_rules.rb</code> so that you are able to update the shipped default set <code>rules.rb</code> without hassle. You still may want to take a look inside for examples.</p>
+
+<p>There are 3 different possibilities to define a rule:</p>
+
+<ul>
+<li>
+<strong>string</strong> matches if string is in mail body (case insensitive)</li>
+<li>
+<strong>regexp</strong> matches if body matches regex (use i modifier for case insensitivity)</li>
+<li>
+<strong>block</strong> matches if the block returns a truethy value (yields the mail object).
+You can pass a descriptive name as first argument (see the examples).</li>
+</ul><p>You can also pass an second argument <code>crosscheck</code> which defaults to true and can be set to false. When set to false and the mail matches this rule it does not require a matching crosscheck.</p>
+
+<div class="highlight highlight-ruby"><pre><span class="n">rule</span><span class="p">(</span><span class="s2">"foo"</span><span class="p">,</span> <span class="kp">false</span><span class="p">)</span>
+<span class="n">rule</span><span class="p">(</span><span class="s2">"blub"</span><span class="p">,</span> <span class="kp">false</span><span class="p">)</span> <span class="p">{</span><span class="o">|</span><span class="n">m</span><span class="o">|</span> <span class="s2">"…"</span> <span class="p">}</span>
+</pre></div>
+
+<h3>
+<a name="what-happens-with-unhandled-emails" class="anchor" href="#what-happens-with-unhandled-emails"><span class="octicon octicon-link"></span></a>What happens with unhandled emails?</h3>
+
+<p>If you'd run bouncefetch and then take a look into your IMAP account you might find:</p>
+
+<ul>
+<li>
+<strong>unread messages</strong> no search query have matched this mails so bouncefetch never got this mail</li>
+<li>
+<strong>read messages</strong> the mail got fetched by bouncefetch but couldn't be handled, possible causes:
+
+<ul>
+<li>
+<strong>unmatched</strong> no rule has matched</li>
+<li>
+<strong>no crosscheck</strong> a rule has matched but no crosscheck did</li>
+<li>
+<strong>no candidate</strong> mail was handled but no candidate reference could be found</li>
+<li>
+<strong>leave mapping</strong> a rule matched but the cause mapping in config.rb is set to <code>leave</code>
+</li>
+<li>
+<strong>fail</strong> bouncefetch totally failed and raised an exception</li>
+</ul>
+</li>
+</ul><p>Best strategy is to run bouncefetch once normally and then with <code>-i</code> resp. <code>--inspect</code>. This will open
+up an interactive <a href="http://pryrepl.org/">pry</a> session which let you easily investigate and test new rules.</p>
+
+<h2>
+<a name="export" class="anchor" href="#export"><span class="octicon octicon-link"></span></a>Export</h2>
+
+<p>You can export the candidates to a CSV file to further process the data. Only candidates which have reached your configured limits will be exported.</p>
+
+<pre><code>bouncefetch -e candidates.csv
+</code></pre>
+
+<p>After successfully writing the CSV to disk the exported candidates <strong>will be removed from the internal database</strong>. If you don't want this use <code>-d</code> resp. <code>--dryrun</code>.</p>
+
+<pre><code>bouncefetch -de candidates.csv
+</code></pre>
+
+<p>By default all columns will be exported which are:</p>
+
+<ul>
+<li>
+<strong>reference</strong> reference of your identification_header or email address</li>
+<li>
+<strong>soft/hard_bounces</strong> amount of soft/hard bounces registered</li>
+<li>
+<strong>soft/hard_bounce_dates</strong> dates (without time) when the bounces were registered (separated by <code>@@@</code>)</li>
+<li>
+<strong>soft/hard_bounce_reasons</strong> the rule conditions which have matched each bounce (separated by <code>@@@</code>)</li>
+</ul><p>You can specify which columns should be exported by passing <code>-o</code> resp. <code>--output</code> argument (note the shortened names):</p>
+
+<pre><code>bouncefetch -e candidates.csv -o ref,sbounces,hbounces,sbounces_dates,hbounces_dates,sbounces_reasons,hbounces_reasons
+</code></pre>
+
+<h3>
+<a name="remote-export" class="anchor" href="#remote-export"><span class="octicon octicon-link"></span></a>Remote export</h3>
+
+<p>Remote export functions like the normal CSV export (same behaviour/options) but POSTs the data as array to a remote HTTP(S) endpoint.</p>
+
+<p>Bouncefetch POSTs a JSON string on query key candidates <code>"candidates" =&gt; "JSON encoded string"</code></p>
+
+<p>This is an example of the parsed JSON:</p>
+
+<div class="highlight highlight-json"><pre><span class="err">&gt;</span> <span class="err">JSON.parse(params</span><span class="p">[</span><span class="err">:candidates</span><span class="p">]</span><span class="err">)</span>
+<span class="err">=&gt;</span> <span class="s2">"foo@example.com"</span> <span class="err">=&gt;</span> <span class="p">{</span>
+     <span class="nt">"reference"</span> <span class="err">=&gt;</span> <span class="s2">"foo@example.com"</span><span class="p">,</span>
+     <span class="nt">"soft_bounces"</span> <span class="err">=&gt;</span> <span class="mi">0</span><span class="p">,</span>
+     <span class="nt">"hard_bounces"</span> <span class="err">=&gt;</span> <span class="mi">1</span><span class="p">,</span>
+     <span class="nt">"soft_bounce_dates"</span> <span class="err">=&gt;</span> <span class="p">[],</span>
+     <span class="nt">"hard_bounce_dates"</span> <span class="err">=&gt;</span> <span class="p">[</span><span class="s2">"2014-06-03"</span><span class="p">],</span>
+     <span class="nt">"soft_bounce_reasons"</span> <span class="err">=&gt;</span> <span class="p">[],</span>
+     <span class="nt">"hard_bounce_reasons"</span> <span class="err">=&gt;</span> <span class="p">[</span><span class="s2">"account is disabled"</span><span class="p">]</span>
+   <span class="p">}</span><span class="err">,</span>
+   <span class="s2">"bar@example.com"</span> <span class="err">=&gt;</span> <span class="p">{</span>
+     <span class="nt">"reference"</span> <span class="err">=&gt;</span> <span class="s2">"bar@example.com"</span><span class="p">,</span>
+     <span class="nt">"soft_bounces"</span> <span class="err">=&gt;</span> <span class="mi">0</span><span class="p">,</span>
+     <span class="nt">"hard_bounces"</span> <span class="err">=&gt;</span> <span class="mi">1</span><span class="p">,</span>
+     <span class="nt">"soft_bounce_dates"</span> <span class="err">=&gt;</span> <span class="p">[],</span>
+     <span class="nt">"hard_bounce_dates"</span> <span class="err">=&gt;</span> <span class="p">[</span><span class="s2">"2014-06-04"</span><span class="p">],</span>
+     <span class="nt">"soft_bounce_reasons"</span> <span class="err">=&gt;</span> <span class="p">[],</span>
+     <span class="nt">"hard_bounce_reasons"</span> <span class="err">=&gt;</span> <span class="p">[</span><span class="s2">"unrouteable address"</span><span class="p">]</span>
+   <span class="p">}</span>
+</pre></div>
+
+<h2>
+<a name="todo" class="anchor" href="#todo"><span class="octicon octicon-link"></span></a>Todo</h2>
+
+<ul>
+<li>Handle bounces where the original email is attached rather than inline (currently attachments are ignored)</li>
+<li>Handle bounces with no body to at least check the subject (currenlty mails with no body will be fail-skipped)</li>
+<li>Support multiple IMAP accounts or configurations</li>
+<li>Increase performance (it's a bit slow)</li>
+</ul><h2>
+<a name="contributing" class="anchor" href="#contributing"><span class="octicon octicon-link"></span></a>Contributing</h2>
+
+<p>I started this project to create a comprehensive ruleset to classify bounces so please contribute!
+You can contribute by <strong>giving feedback</strong>, <strong>propose rules</strong> or <strong>report issues</strong>.</p>
+
+<p>If you want to contribute code directly:</p>
+
+<ol>
+<li>Fork it (<a href="http://github.com/2called-chaos/bouncefetch/fork">click to fork</a>)</li>
+<li>Create your feature branch (<code>git checkout -b my-new-feature</code>)</li>
+<li>Commit your changes (<code>git commit -am 'Add some feature'</code>)</li>
+<li>Push to the branch (<code>git push origin my-new-feature</code>)</li>
+<li>Create new Pull Request</li>
+</ol><h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>Copyright © 2014 Sven Pachnit (<a href="mailto:sven@bmonkeys.net">sven@bmonkeys.net</a>).<br>
+Released under the MIT License, see <a href="https://github.com/2called-chaos/bouncefetch/blob/master/LICENSE.txt">LICENSE.txt</a> for details.</p>
+
+<h2>
+<a name="more-from-bmonkeys" class="anchor" href="#more-from-bmonkeys"><span class="octicon octicon-link"></span></a>More from bmonkeys</h2>
+
+<ul>
+<li><a href="http://blog.bmonkeys.net">http://blog.bmonkeys.net</a></li>
+<li><a href="https://de.gamesplanet.com">https://de.gamesplanet.com</a></li>
+<li>
+<a href="https://github.com/2called-chaos/dle">https://github.com/2called-chaos/dle</a>    Directory List Edit – Edit file structures in your favorite editor!</li>
+<li>
+<a href="https://github.com/2called-chaos/ts3r">https://github.com/2called-chaos/ts3r</a>   A little framework to build teamspeak 3 bots.</li>
+</ul>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
