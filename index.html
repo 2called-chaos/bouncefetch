@@ -228,24 +228,24 @@ up an interactive <a href="http://pryrepl.org/">pry</a> session which let you ea
 
 <p>This is an example of the parsed JSON:</p>
 
-<div class="highlight highlight-ruby"><pre><span class="err">&gt;</span> <span class="err">JSON.parse(params</span><span class="p">[</span><span class="err">:candidates</span><span class="p">]</span><span class="err">)</span>
-<span class="err">=&gt;</span> <span class="s2">"foo@example.com"</span> <span class="err">=&gt;</span> <span class="p">{</span>
-     <span class="nt">"reference"</span> <span class="err">=&gt;</span> <span class="s2">"foo@example.com"</span><span class="p">,</span>
-     <span class="nt">"soft_bounces"</span> <span class="err">=&gt;</span> <span class="mi">0</span><span class="p">,</span>
-     <span class="nt">"hard_bounces"</span> <span class="err">=&gt;</span> <span class="mi">1</span><span class="p">,</span>
-     <span class="nt">"soft_bounce_dates"</span> <span class="err">=&gt;</span> <span class="p">[],</span>
-     <span class="nt">"hard_bounce_dates"</span> <span class="err">=&gt;</span> <span class="p">[</span><span class="s2">"2014-06-03"</span><span class="p">],</span>
-     <span class="nt">"soft_bounce_reasons"</span> <span class="err">=&gt;</span> <span class="p">[],</span>
-     <span class="nt">"hard_bounce_reasons"</span> <span class="err">=&gt;</span> <span class="p">[</span><span class="s2">"account is disabled"</span><span class="p">]</span>
-   <span class="p">}</span><span class="err">,</span>
-   <span class="s2">"bar@example.com"</span> <span class="err">=&gt;</span> <span class="p">{</span>
-     <span class="nt">"reference"</span> <span class="err">=&gt;</span> <span class="s2">"bar@example.com"</span><span class="p">,</span>
-     <span class="nt">"soft_bounces"</span> <span class="err">=&gt;</span> <span class="mi">0</span><span class="p">,</span>
-     <span class="nt">"hard_bounces"</span> <span class="err">=&gt;</span> <span class="mi">1</span><span class="p">,</span>
-     <span class="nt">"soft_bounce_dates"</span> <span class="err">=&gt;</span> <span class="p">[],</span>
-     <span class="nt">"hard_bounce_dates"</span> <span class="err">=&gt;</span> <span class="p">[</span><span class="s2">"2014-06-04"</span><span class="p">],</span>
-     <span class="nt">"soft_bounce_reasons"</span> <span class="err">=&gt;</span> <span class="p">[],</span>
-     <span class="nt">"hard_bounce_reasons"</span> <span class="err">=&gt;</span> <span class="p">[</span><span class="s2">"unrouteable address"</span><span class="p">]</span>
+<div class="highlight highlight-ruby"><pre><span class="o">&gt;</span> <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:candidates</span><span class="o">]</span><span class="p">)</span>
+<span class="o">=&gt;</span> <span class="s2">"foo@example.com"</span> <span class="o">=&gt;</span> <span class="p">{</span>
+     <span class="s2">"reference"</span> <span class="o">=&gt;</span> <span class="s2">"foo@example.com"</span><span class="p">,</span>
+     <span class="s2">"soft_bounces"</span> <span class="o">=&gt;</span> <span class="mi">0</span><span class="p">,</span>
+     <span class="s2">"hard_bounces"</span> <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span>
+     <span class="s2">"soft_bounce_dates"</span> <span class="o">=&gt;</span> <span class="o">[]</span><span class="p">,</span>
+     <span class="s2">"hard_bounce_dates"</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s2">"2014-06-03"</span><span class="o">]</span><span class="p">,</span>
+     <span class="s2">"soft_bounce_reasons"</span> <span class="o">=&gt;</span> <span class="o">[]</span><span class="p">,</span>
+     <span class="s2">"hard_bounce_reasons"</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s2">"account is disabled"</span><span class="o">]</span>
+   <span class="p">},</span>
+   <span class="s2">"bar@example.com"</span> <span class="o">=&gt;</span> <span class="p">{</span>
+     <span class="s2">"reference"</span> <span class="o">=&gt;</span> <span class="s2">"bar@example.com"</span><span class="p">,</span>
+     <span class="s2">"soft_bounces"</span> <span class="o">=&gt;</span> <span class="mi">0</span><span class="p">,</span>
+     <span class="s2">"hard_bounces"</span> <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span>
+     <span class="s2">"soft_bounce_dates"</span> <span class="o">=&gt;</span> <span class="o">[]</span><span class="p">,</span>
+     <span class="s2">"hard_bounce_dates"</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s2">"2014-06-04"</span><span class="o">]</span><span class="p">,</span>
+     <span class="s2">"soft_bounce_reasons"</span> <span class="o">=&gt;</span> <span class="o">[]</span><span class="p">,</span>
+     <span class="s2">"hard_bounce_reasons"</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s2">"unrouteable address"</span><span class="o">]</span>
    <span class="p">}</span>
 </pre></div>
 
