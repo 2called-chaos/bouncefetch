@@ -166,7 +166,7 @@ Bouncefetch POSTs a JSON string on query key candidates `"candidates" => "JSON e
 
 This is an example of the parsed JSON:
 
-```json
+```ruby
 > JSON.parse(params[:candidates])
 => "foo@example.com" => {
      "reference" => "foo@example.com",
