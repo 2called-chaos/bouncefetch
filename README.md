@@ -1,4 +1,4 @@
-# Bouncefetch [![version 0.1.1](http://img.shields.io/badge/version-0.1.1-brightgreen.svg)](https://github.com/2called-chaos/bouncefetch/blob/master/VERSION) [![MIT License](http://img.shields.io/badge/license-MIT-yellowgreen.svg)](https://github.com/2called-chaos/bouncefetch/blob/master/LICENSE.txt) [![have faith!](http://img.shields.io/badge/coverage-have%20faith!-blue.svg)](http://www.troll.me/images/faith-fall/have-faith-weve-only-dropped-two-people-so-far.jpg) [![weather sunny](http://img.shields.io/badge/weather-sunny-yellow.svg)](http://i1.ytimg.com/vi/2e6BwPAvopY/maxresdefault.jpg)
+# Bouncefetch [![version 0.1.2](http://img.shields.io/badge/version-0.1.2-brightgreen.svg)](https://github.com/2called-chaos/bouncefetch/blob/master/VERSION) [![MIT License](http://img.shields.io/badge/license-MIT-yellowgreen.svg)](https://github.com/2called-chaos/bouncefetch/blob/master/LICENSE.txt) [![have faith!](http://img.shields.io/badge/coverage-have%20faith!-blue.svg)](http://www.troll.me/images/faith-fall/have-faith-weve-only-dropped-two-people-so-far.jpg) [![weather sunny](http://img.shields.io/badge/weather-sunny-yellow.svg)](http://i1.ytimg.com/vi/2e6BwPAvopY/maxresdefault.jpg)
 
 ***"bounces should be read by humans"* – we don't think so!**
 
@@ -9,7 +9,7 @@ of failed recipients which you can export to do whatever you want (unsubscribe, 
 
 ## Features
 
-* easy and flexible configuration
+* easy and flexible configuration (now support multiple configs as well)
 * classifies bounces with the [build-in rules](https://github.com/2called-chaos/bouncefetch/blob/master/config/rules.rb) (custom ones are easily added)
 * maintains an exportable database of failed recipients and their causes (no actual database required)
 * export to CSV file or post to remote http(s) endpoint (perfect for automatisation)
