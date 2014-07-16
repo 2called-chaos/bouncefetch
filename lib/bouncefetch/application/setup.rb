@@ -4,6 +4,7 @@ module Bouncefetch
       def initialize env, argv
         @env, @argv = env, argv
         @opts = {
+          config_file: "config",
           dispatch: :index,
           check_for_updates: true,
           simulate: false,
@@ -37,6 +38,7 @@ module Bouncefetch
           opts.on("-m", "--monochrome", "Don't colorize output") { logger.colorize = false }
           opts.on("-t", "--throttle-ignore", "Disable IMAP throttle detection") { @opts[:throttle_detect] = false }
           opts.on("-i", "--inspect", "Open pry shell for every mail which is unidentifyable, unmatched or has", "no matching crosscheck. Use --shell beforehand to get more help on pry.") { @opts[:inspect] = true }
+          opts.on("--config NAME", String, "Use a different config file (default: config)") {|f| @opts[:config_file] = f }
 
 
           # stats / export
@@ -68,6 +70,11 @@ module Bouncefetch
         end
       end
 
+      def app_config_file
+        fuzzy = Dir["#{ROOT}/config/*.rb"].grep(/#{@opts[:config_file]}/i)
+        fuzzy.length == 1 ? fuzzy.first : "#{ROOT}/config/#{@opts[:config_file]}.rb"
+      end
+
       def load_configuration!
         unless Thread.main[:app_config]
           log_perform_failsafe "Loading config and rules..." do
@@ -75,10 +82,9 @@ module Bouncefetch
             Thread.main[:app_rules] = @rules = Rules.new
 
             # load all configs
-            app_config = "#{ROOT}/config/config.rb"
-            load app_config
+            load app_config_file
             r = Dir.glob("#{ROOT}/config/**/*.rb")
-            r.delete(app_config)
+            r.delete(app_config_file)
             r.each {|f| load f }
           end
         end
@@ -98,7 +104,7 @@ module Bouncefetch
           # load rules configs
           begin
             r = Dir.glob("#{ROOT}/config/**/*.rb")
-            r.delete("#{ROOT}/config/config.rb")
+            r.delete(app_config_file)
             r.each {|f| load f }
           rescue
             Thread.main[:app_rules] = @rules = @old_rules

@@ -69,6 +69,8 @@ Install dependencies:
     -t, --throttle-ignore            Disable IMAP throttle detection
     -i, --inspect                    Open pry shell for every mail which is unidentifyable, unmatched or has
                                      no matching crosscheck. Use --shell beforehand to get more help on pry.
+    --config NAME                    Use a different config file (default: config)
+
 
     # Registry & Export
     -s, --statistics                 show statistics about the registry and candidates
@@ -194,7 +196,6 @@ This is an example of the parsed JSON:
 
 * Handle bounces where the original email is attached rather than inline (currently attachments are ignored)
 * Handle bounces with no body to at least check the subject (currenlty mails with no body will be fail-skipped)
-* Support multiple IMAP accounts or configurations
 * Increase performance (it's a bit slow)
 
 
