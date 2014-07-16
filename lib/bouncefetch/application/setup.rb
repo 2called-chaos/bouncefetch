@@ -71,7 +71,7 @@ module Bouncefetch
       end
 
       def app_config_file
-        fuzzy = Dir["#{ROOT}/config/*.rb"].grep(/#{@opts[:config_file]}/i)
+        fuzzy = Dir["#{ROOT}/config/*.rb"].select{|f| File.basename(f) =~ /#{@opts[:config_file]}/i }
         fuzzy.length == 1 ? fuzzy.first : "#{ROOT}/config/#{@opts[:config_file]}.rb"
       end
 
