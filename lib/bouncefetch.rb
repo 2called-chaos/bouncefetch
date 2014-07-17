@@ -5,6 +5,7 @@ require "fileutils"
 require "date"
 require "json"
 require "csv"
+require "net/http"
 require "net/imap"
 require "mail"
 begin ; require "pry" ; rescue LoadError ; end

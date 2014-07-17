@@ -77,7 +77,6 @@ module Bouncefetch
           logger.log_with_print do
             log "  Current version: "
             if @opts[:check_for_updates]
-              require "net/http"
               log c("checking...", :blue)
 
               begin
