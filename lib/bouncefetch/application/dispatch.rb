@@ -37,6 +37,20 @@ module Bouncefetch
         end
       end
 
+      def dispatch_upgrade
+        log c("You're running #{Bouncefetch::VERSION}", :blue)
+
+        # git pull
+        log "Pull latest changes..."
+        system %{cd "#{Bouncefetch::ROOT}" && git pull}
+
+        # bundle
+        log "Installing bundle..."
+        system %{cd "#{Bouncefetch::ROOT}" && bundle install}
+
+        log c("You're now running #{File.read("#{Bouncefetch::ROOT}/VERSION")}", :blue)
+      end
+
       def dispatch_help
         logger.log_without_timestr do
           @optparse.to_s.split("\n").each(&method(:log))

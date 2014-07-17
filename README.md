@@ -86,6 +86,7 @@ Install dependencies:
     -h, --help                       Shows this help
     -v, --version                    Shows version and other info
     -z                               Do not check for updates on GitHub (with -v/--version)
+        --upgrade                    Update bouncefetch (only works with git)
         --mailboxes                  List all availables mailboxes in your IMAP account
         --shell                      Open pry shell
 

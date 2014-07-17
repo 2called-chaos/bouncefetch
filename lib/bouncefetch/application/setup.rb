@@ -57,6 +57,7 @@ module Bouncefetch
           opts.on("-h", "--help", "Shows this help") { @opts[:dispatch] = :help }
           opts.on("-v", "--version", "Shows version and other info") { @opts[:dispatch] = :info }
           opts.on("-z", "Do not check for updates on GitHub (with -v/--version)") { @opts[:check_for_updates] = false }
+          opts.on("--upgrade", "Update bouncefetch (only works with git)") { @opts[:dispatch] = :upgrade }
           opts.on("--mailboxes", "List all availables mailboxes in your IMAP account") { @opts[:dispatch] = :mailboxes }
           opts.on("--shell", "Open pry shell") { @opts[:dispatch] = :shell }
         end
