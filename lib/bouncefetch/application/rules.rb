@@ -7,9 +7,9 @@ module Bouncefetch
         setup :crosschecks, &block
       end
 
-      def rule condition = nil, &block
+      def rule condition = nil, crosscheck = true, &block
         @current_store[:rules] ||= []
-        @current_store[:rules].unshift Rule.new(block || condition)
+        @current_store[:rules].unshift Rule.new(block || condition, crosscheck)
       end
     end
   end
