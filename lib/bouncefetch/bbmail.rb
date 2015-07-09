@@ -144,5 +144,9 @@ module Bouncefetch
     def now!
       now?.tap{|r| throw(:inspect_escape) if r }
     end
+
+    def del!
+      delete!.tap{ throw(:inspect_escape) }
+    end
   end
 end
