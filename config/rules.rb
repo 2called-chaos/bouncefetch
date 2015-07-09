@@ -32,10 +32,10 @@ Bouncefetch.rules do
   end
 
   type :out_of_office do
-    rule{|m| m.subject =~ /abwesenheits-benachrichtigung/i }
-    rule{|m| m.subject =~ /abwesenheitshinweis/i }
-    rule{|m| m.subject =~ /abwesenheitsnotiz/i }
-    rule{|m| m.subject =~ /vacation reply/i }
+    rule(nil, false){|m| m.subject =~ /abwesenheits-benachrichtigung/i }
+    rule(nil, false){|m| m.subject =~ /abwesenheitshinweis/i }
+    rule(nil, false){|m| m.subject =~ /abwesenheitsnotiz/i }
+    rule(nil, false){|m| m.subject =~ /vacation reply/i }
   end
 
   type :quota_exceeded do
