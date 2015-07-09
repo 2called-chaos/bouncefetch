@@ -34,7 +34,7 @@ module Bouncefetch
             case mode = cfg("cause_mapping")[type.to_sym]
               when "leave"        then bbmail.ignore!(false)
               when "ignore"       then bbmail.ignore!
-              when "soft", "hard" then bbmail.handle!(mode, rule)
+              when "soft", "hard" then bbmail.handle!(mode, rule, rule.opts.key?(:ref) ? rule.opts[:ref] : false)
               when "soft?"        then bbmail.handle!(:soft, rule, true)
               when "hard?"        then bbmail.handle!(:hard, rule, true)
               else raise("no cause mapping for type `#{type}'")
