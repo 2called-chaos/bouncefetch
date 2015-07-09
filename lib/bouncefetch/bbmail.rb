@@ -136,7 +136,13 @@ module Bouncefetch
         else
           type, rule = m
           app.log app.c("yes, #{type}: #{rule.cond}", :green)
+          return true
       end
+      false
+    end
+
+    def now!
+      exit if now?
     end
   end
 end
