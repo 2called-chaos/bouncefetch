@@ -18,7 +18,7 @@ module Bouncefetch
       app.log app.c("#{msg}", color)
     end
 
-    def handle! mode = :soft, rule, ignore_missing_ref = false
+    def handle! mode = :soft, rule = nil, ignore_missing_ref = false
       cid = candidate
       if cid.present?
         plog "X", :green
