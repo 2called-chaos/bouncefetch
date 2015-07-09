@@ -142,7 +142,7 @@ module Bouncefetch
     end
 
     def now!
-      exit if now?
+      now?.tap{|r| throw(:inspect_escape) if r }
     end
   end
 end

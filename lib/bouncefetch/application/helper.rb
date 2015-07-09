@@ -62,7 +62,10 @@ module Bouncefetch
           log c("=============================================", :blue)
           mail.info
           log c("=============================================", :blue)
-          mail.instance_eval { binding.pry(quiet: true) }
+
+          catch :inspect_escape do
+            mail.instance_eval { binding.pry(quiet: true) }
+          end
           reload_rules!
         end
       end
