@@ -35,6 +35,8 @@ module Bouncefetch
               when "leave"        then bbmail.ignore!(false)
               when "ignore"       then bbmail.ignore!
               when "soft", "hard" then bbmail.handle!(mode, rule)
+              when "soft?"        then bbmail.handle!(:soft, rule, true)
+              when "hard?"        then bbmail.handle!(:hard, rule, true)
               else raise("no cause mapping for type `#{type}'")
             end
         end

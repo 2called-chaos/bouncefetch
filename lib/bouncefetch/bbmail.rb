@@ -18,17 +18,23 @@ module Bouncefetch
       app.log app.c("#{msg}", color)
     end
 
-    def handle! mode = :soft, rule
+    def handle! mode = :soft, rule, ignore_missing_ref = false
       cid = candidate
       if cid.present?
         plog "X", :green
         app.stats.send("handled_#{mode}_bounces", +1)
-        app.registry.handle(candidate, mode, raw.date, rule)
+        app.registry.handle(cid, mode, raw.date, rule)
         delete! if app.cfg("general.remove_processed")
       else
-        plog "X", :red
-        app.stats.send("unidentifyable_bounces", +1)
-        app.inspect_mail(self)
+        if ignore_missing_ref
+          plog "X", :yellow
+          app.stats.ignored_mails +1
+          delete! if app.cfg("general.remove_processed")
+        else
+          plog "X", :red
+          app.stats.unidentifyable_bounces +1
+          app.inspect_mail(self)
+        end
       end
     end
 

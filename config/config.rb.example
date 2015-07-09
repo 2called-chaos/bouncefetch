@@ -71,6 +71,7 @@ Bouncefetch.configure do
   #   leave => leave file despite setting
   #   ignore => remove file (unless disabled) but ignore bounce in general
   #   soft/hard => increase client bounce count
+  #   soft?/hard? => increase client bounce count but ignore missing references
   group :cause_mapping do
     # ignore rule
     set :ignore, "ignore"
@@ -82,7 +83,7 @@ Bouncefetch.configure do
     set :quota_exceeded, "ignore"
 
     # recipient not found
-    set :recipient_unknown, "hard"
+    set :recipient_unknown, "hard?"
 
     # permanently rejected
     set :permanently_rejected, "hard"
