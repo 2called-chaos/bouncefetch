@@ -1,8 +1,9 @@
 module Bouncefetch
   class Rule
-    attr_reader :cond, :crosscheck
+    attr_reader :cond, :crosscheck, :opts
 
-    def initialize condition, crosscheck = true
+    def initialize condition, crosscheck = true, opts = {}
+      @opts = {}.merge(opts)
       @cond = condition
       @crosscheck = crosscheck
     end
