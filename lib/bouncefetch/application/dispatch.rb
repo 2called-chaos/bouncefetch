@@ -262,7 +262,9 @@ module Bouncefetch
                         mid_expunge
                         handle_throttle
                         handle_mail(mail)
+                        break if $force_shutdown
                       end
+                      break if $force_shutdown
                     end
 
                     # expunge before selecting another mailbox
@@ -274,6 +276,7 @@ module Bouncefetch
                   end
                 end
               end
+              break if $force_shutdown
             end
 
             log c("All finished!", :green)

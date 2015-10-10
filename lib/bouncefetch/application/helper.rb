@@ -59,6 +59,7 @@ module Bouncefetch
           log "Type " << c("info", :magenta) << c(" to get a brief overview of the current mail.")
           log "Type " << c("now?", :magenta) << c(" to reload rules and check if mail matches now.")
           log "Type " << c("exit", :magenta) << c(" to reload the rules and continue.")
+          log "Type " << c("shutdown", :magenta) << c(" to gracefully stop the app (save reg, etc.) - DON'T use `exit!'")
           log c("=============================================", :blue)
           mail.info
           log c("=============================================", :blue)

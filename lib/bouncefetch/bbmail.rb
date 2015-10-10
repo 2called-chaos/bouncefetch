@@ -148,5 +148,10 @@ module Bouncefetch
     def del!
       delete!.tap{ throw(:inspect_escape) }
     end
+
+    def shutdown
+      $force_shutdown = true
+      throw(:inspect_escape)
+    end
   end
 end
