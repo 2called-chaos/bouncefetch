@@ -65,7 +65,7 @@ module Bouncefetch
           @storage[candidate] = nil if (@storage[candidate][:updated_at] + @opts[:lifetime]) < Date.today
         end
         @storage[candidate] ||= { reasons: { soft: [], hard: [] }, hits: { soft: [], hard: [] }, updated_at: Date.today }
-        @storage[candidate][:hits][mode.to_sym] << date.to_date.to_s
+        @storage[candidate][:hits][mode.to_sym] << (date || Date.today).to_date.to_s
         @storage[candidate][:reasons][mode.to_sym] << rule.try(:cond).to_s if rule.try(:cond).to_s.present?
       end
 
