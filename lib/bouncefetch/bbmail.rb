@@ -99,7 +99,7 @@ module Bouncefetch
 
     def info
       info_data = {}.tap do |r|
-        r["Matching"] = now?(false)
+        r["Matching"] = now?(false, false)
         r["Subject"] = raw.subject
         r["Multipart"] = raw.multipart?
         if raw.multipart?
@@ -129,17 +129,23 @@ module Bouncefetch
       nil
     end
 
-    def now? reload_rules = true
+    def now? reload_rules = true, to_log = true
       app.reload_rules! if reload_rules
+      strr, res = "?", false
       case m = match?
-        when nil then app.log app.c("rule matched but no crosscheck", :magenta)
-        when false then app.log app.c("no rule matches, crosscheck: #{crosscheck_match?}", :red)
+        when nil then strr = app.log app.c("rule matched but no crosscheck", :magenta)
+        when false then strr = app.log app.c("no rule matches, crosscheck: #{crosscheck_match?}", :red)
         else
           type, rule = m
-          app.log app.c("yes, #{type}: #{rule.cond}", :green)
-          return true
+          strr = app.c("yes, #{type}: #{rule.cond}", :green)
+          res = true
       end
-      false
+      if to_log
+        app.log strr
+        res
+      else
+        strr
+      end
     end
 
     def now!
