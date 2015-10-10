@@ -42,7 +42,7 @@ module Bouncefetch
         end
       rescue
         warn $!.message
-        warn $!.backtrace.detect{|l| l.include?(ROOT) }
+        warn $!.backtrace.detect{|l| l.include?(ROOT.to_s) }
       end
     end
 
