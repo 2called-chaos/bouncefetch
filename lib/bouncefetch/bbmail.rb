@@ -133,8 +133,8 @@ module Bouncefetch
       app.reload_rules! if reload_rules
       strr, res = "?", false
       case m = match?
-        when nil then strr = app.log app.c("rule matched but no crosscheck", :magenta)
-        when false then strr = app.log app.c("no rule matches, crosscheck: #{crosscheck_match?}", :red)
+        when nil then strr = app.c("rule matched but no crosscheck", :magenta)
+        when false then strr = app.c("no rule matches, crosscheck: #{crosscheck_match?}", :red)
         else
           type, rule = m
           strr = app.c("yes, #{type}: #{rule.cond}", :green)
