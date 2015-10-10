@@ -108,7 +108,7 @@ module Bouncefetch
             if ix = body.index("------ This is a copy of the message, including all the headers. ------")
               r["Part #{i}"] = body[0..(ix-1)].strip
             else
-              r["Part #{i}"] = body[0..500].strip
+              r["Part #{i}"] = body[0..750].strip
             end
           end
         else
@@ -116,7 +116,7 @@ module Bouncefetch
           if ix = body.index("------ This is a copy of the message, including all the headers. ------")
             r["Body (snip)"] = body[0..(ix-1)].strip
           else
-            r["Body (snip)"] = body[0..500].strip
+            r["Body (snip)"] = body[0..750].strip
           end
         end
       end
