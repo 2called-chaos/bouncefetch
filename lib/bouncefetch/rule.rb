@@ -10,6 +10,7 @@ module Bouncefetch
 
     def normalized_body mail, plain = false
       r = mail.body.decoded.force_encoding("UTF-8")
+      r = r..encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: ' ')
       r = r.downcase if !plain && @opts[:downcase]
       r = r.squish if !plain && @opts[:squish]
       r = r.tr("\n", " ").tr("\r", "") if !plain && @opts[:oneline]
