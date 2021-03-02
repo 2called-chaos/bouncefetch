@@ -84,7 +84,7 @@ module Bouncefetch
 
             # load all configs
             load app_config_file
-            r = Dir.glob("#{ROOT}/config/**/*.rb")
+            r = Dir.glob("#{ROOT}/config/**/*rule*.rb")
             r.delete(app_config_file)
             r.each {|f| load f }
           end
@@ -104,7 +104,7 @@ module Bouncefetch
 
           # load rules configs
           begin
-            r = Dir.glob("#{ROOT}/config/**/*.rb")
+            r = Dir.glob("#{ROOT}/config/**/*rule*.rb")
             r.delete(app_config_file)
             r.each {|f| load f }
           rescue
