@@ -245,6 +245,8 @@ module Bouncefetch
                 begin
                   connection.select(mailbox)
                   logger.raw c("OK", :green)
+                  status = connection.status(mailbox, ["MESSAGES", "RECENT", "UNSEEN"])
+                  logger.raw c(" (#{status["MESSAGES"]} total / #{status["RECENT"]} recent / #{status["UNSEEN"]} unseen)", :blue)
                   selected = true
                 rescue Net::IMAP::NoResponseError
                   logger.raw c("FAILED (#{$!.message.strip})", :red)
