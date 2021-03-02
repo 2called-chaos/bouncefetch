@@ -19,6 +19,7 @@ module Bouncefetch
       end
 
       def imap_bulk_expunge
+        return if delete_buffer.empty?
         to_remove = delete_buffer.clone
         @delete_buffer.clear
         connection.uid_store(to_remove, "+FLAGS", [:Deleted])
