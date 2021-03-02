@@ -43,6 +43,13 @@ module Bouncefetch
             else
               imap.login(cfg("imap.username"), cfg("imap.password"))
             end
+            # prevent idle timeout?
+            Thread.new do
+              loop do
+                connection.list('', '*')
+                sleep 60
+              end
+            end
             logger.raw c("DONE", :green)
           rescue Errno::ECONNREFUSED, Net::IMAP::NoResponseError, SocketError
             failed = true
