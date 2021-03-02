@@ -130,7 +130,7 @@ Bouncefetch.rules do
     rule("user unknown")
     rule(/550 user .+? unknown/i)
     rule(/die e-mail-adresse des empf=e4ngers wurde im e\-mail\-system des empf=e4ngers/i)
-    rule(/this user doesn't have a ([a-z]+)\.([a-z]{1,3}) account/i)
+    rule(/this user doesn't have a ([a-z0-9]+)\.([a-z]{1,3})(\.[a-z]{1,3})? account/i)
     rule(:domino_shit) {|m| m.multipart? && m.parts[0].body.to_s.match(/not\s+listed\s+in\s+domino\s+directory/i) }
   end
 
