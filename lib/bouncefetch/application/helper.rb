@@ -31,7 +31,7 @@ module Bouncefetch
 
         if @mid_expunge > cfg("general.expunge_rate") && connected?
           log(c("E", :yellow))
-          connection.expunge
+          imap_bulk_expunge
           logger.raw "\b \b#{c("E", :magenta)}"
           @mid_expunge = nil
         end

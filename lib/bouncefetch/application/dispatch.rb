@@ -22,7 +22,7 @@ module Bouncefetch
           # graceful shutdown
           begin
             unless @opts[:simulate]
-              log_perform_failsafe("Performing IMAP expunge...") { connection.expunge } if opts[:expunge] && connected?
+              log_perform_failsafe("Performing IMAP expunge...") { imap_bulk_expunge } if opts[:expunge] && connected?
               log_perform_failsafe("Saving registry...") { @registry.save } if opts[:registry] && @registry
             end
           rescue ; end
@@ -270,7 +270,7 @@ module Bouncefetch
                     # expunge before selecting another mailbox
                     if !@opts[:simulate] && connected?
                       log(c("E", :yellow))
-                      connection.expunge
+                      imap_bulk_expunge
                       logger.raw "\b \b#{c("E", :magenta)}"
                     end
                   end

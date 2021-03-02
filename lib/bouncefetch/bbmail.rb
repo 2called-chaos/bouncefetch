@@ -47,8 +47,7 @@ module Bouncefetch
     def delete! expunge = false
       plog "%", :red
       unless app.opts[:simulate]
-        app.connection.uid_store(uid, "+FLAGS", [:Deleted])
-        app.connection.expunge if expunge
+        app.imap_bulk_delete(uid, expunge)
       end
       app.stats.deleted_mails +1
       true
