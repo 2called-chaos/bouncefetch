@@ -66,8 +66,8 @@ module Bouncefetch
 
           sig = catch :inspect_escape do
             mail.instance_eval { binding.pry(quiet: true) }
+            reload_rules!
           end
-          reload_rules!
           raise RetryMailMatchSignal if sig == :retry_match
         end
       end
