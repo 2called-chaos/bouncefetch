@@ -14,6 +14,14 @@ module Bouncefetch
       @raw = Mail.new(fetchdata.attr["RFC822"])
     end
 
+    def mbody stripped = false
+      body = raw.body.decoded.force_encoding("UTF-8")
+      if stripped
+        body = body.gsub(/<("[^"]*"|'[^']*'|[^'">])*>/, "").strip
+      end
+      body
+    end
+
     def plog msg, color = :yellow
       app.log app.c("#{msg}", color)
     end
