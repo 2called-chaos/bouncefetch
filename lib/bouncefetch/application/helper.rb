@@ -64,10 +64,11 @@ module Bouncefetch
           mail.info
           log c("=============================================", :blue)
 
-          catch :inspect_escape do
+          sig = catch :inspect_escape do
             mail.instance_eval { binding.pry(quiet: true) }
           end
           reload_rules!
+          raise RetryMailMatchSignal if sig == :retry_match
         end
       end
 

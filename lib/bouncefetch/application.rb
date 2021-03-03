@@ -6,6 +6,7 @@ module Bouncefetch
   end
 
   class Application
+    RetryMailMatchSignal = Class.new(::RuntimeError)
     attr_reader :opts, :registry, :stats, :config, :rules
     include Helper
     include Dispatch
@@ -40,6 +41,8 @@ module Bouncefetch
               else raise("no cause mapping for type `#{type}'")
             end
         end
+      rescue RetryMailMatchSignal
+        retry
       rescue
         warn $!.message
         warn $!.backtrace.detect{|l| l.include?(ROOT.to_s) }
