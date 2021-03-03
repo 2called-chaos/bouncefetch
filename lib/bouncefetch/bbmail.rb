@@ -96,7 +96,7 @@ module Bouncefetch
       result && cross_checks && result[1].crosscheck && !crosscheck_match? ? nil : result
     end
 
-    def info
+    def info limit = 750
       info_data = {}.tap do |r|
         r["Matching"] = now?(false, false)
         r["Subject"] = raw.subject
@@ -107,7 +107,7 @@ module Bouncefetch
             if ix = body.index("------ This is a copy of the message, including all the headers. ------")
               r["Part #{i}"] = body[0..(ix-1)].strip
             else
-              r["Part #{i}"] = body[0..750].strip
+              r["Part #{i}"] = body[0..limit].strip
             end
           end
         else
@@ -115,7 +115,7 @@ module Bouncefetch
           if ix = body.index("------ This is a copy of the message, including all the headers. ------")
             r["Body (snip)"] = body[0..(ix-1)].strip
           else
-            r["Body (snip)"] = body[0..750].strip
+            r["Body (snip)"] = body[0..limit].strip
           end
         end
       end
