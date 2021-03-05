@@ -17,7 +17,7 @@ module Bouncefetch
     def mbody stripped = false
       body = raw.body.decoded.force_encoding("UTF-8")
       if stripped
-        body = body.gsub(/<("[^"]*"|'[^']*'|[^'">])*>/, "").strip
+        body = body.gsub(/<("[^"]*"|'[^']*'|[^'">])*>/, "").gsub(" ", "").strip
       end
       body
     end
