@@ -190,7 +190,11 @@ module Bouncefetch
           # Post to remote
           post_succeeded = false
           log_perform_failsafe("POSTing data to remote endpoint...") do
-            res = Net::HTTP.post_form URI(opts[:remote]), { "candidates" => candidates_to_json(items, opts[:export_columns]) }
+            json_data = candidates_to_json(items, opts[:export_columns])
+            if opts[:deflate_json]
+              json_data = Base64.strict_encode64(Zlib::Deflate.deflate(json_data))
+            end
+            res = Net::HTTP.post_form URI(opts[:remote]), { "candidates" => json_data }
             raise "server responded with status code #{res.code}" if res.code.to_i != 200
             post_succeeded = true
           end

@@ -10,6 +10,7 @@ module Bouncefetch
           simulate: false,
           throttle_detect: true,
           inspect: false,
+          deflate_json: false,
           export_columns: %w[ref sbounces hbounces sbounces_dates hbounces_dates sbounces_reasons hbounces_reasons],
         }
 
@@ -48,6 +49,7 @@ module Bouncefetch
           opts.on("-c", "--candidates", "list unsubscribe candidates (use export to get csv)") { @opts[:dispatch] = :list_candidates }
           opts.on("-e", "--export FILE", String, "export unsubscribe candidates to file and remove them from the registry", "use with --dryrun to not alter registry (same for --remote)") {|f| @opts[:dispatch] = :export ; @opts[:remote] = f }
           opts.on("-r", "--remote RESOURCE", String, "post unsubscribe candidates to URL and remove them from the registry", "refer to the readme for information about how we post the data") {|f| @opts[:dispatch] = :export_remote ; @opts[:remote] = f }
+          opts.on(      "--compress-json", "post data in base64-encoded, zlib-compressed binary") { @opts[:deflate_json] = true }
           opts.on("-o", "--output col1,col2", Array, "columns to include for --candidates --export --remote", "default: ref,sbounces,hbounces,sbounces_dates,hbounces_dates,sbounces_reasons,hbounces_reasons") {|f| @opts[:export_columns] = f }
 
 
