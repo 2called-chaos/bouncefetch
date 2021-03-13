@@ -70,7 +70,7 @@ module Banana
         info: { color: "yellow", enabled: true },
         warn: { color: "red", enabled: true },
         abort: { color: "red", enabled: true },
-        debug: { color: "blue", enabled: true },
+        debug: { color: "black", enabled: true },
       }
     end
 
