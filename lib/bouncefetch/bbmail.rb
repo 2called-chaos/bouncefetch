@@ -1,10 +1,11 @@
 # Encoding: utf-8
 module Bouncefetch
   class BBMail
-    attr_reader :uid, :raw, :app
+    attr_reader :uid, :raw, :app, :cache
 
     def initialize app, uid
       @app, @uid = app, uid
+      @cache = {}
       app.stats.mails_checked +1
       load!
     end
@@ -95,7 +96,7 @@ module Bouncefetch
         next if type.to_sym == :crosschecks
         rules = store[:rules] || []
         rules.each do |rule|
-          result = [type, rule] if rule.match?(@raw)
+          result = [type, rule] if rule.match?(@raw, cache)
           break if result
         end
         break if result
