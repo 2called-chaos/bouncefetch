@@ -289,7 +289,7 @@ module Bouncefetch
                       # expunge before performing another query
                       mid_expunge(true) if handled > 0
 
-                      log "\n" if handled > 0
+                      log "\n" if handled > 0 && logger.debug?
                     end
 
                     # expunge before selecting another mailbox
