@@ -265,7 +265,7 @@ module Bouncefetch
                       handled, list = 0, []
 
                       logger.log_with_timestr do
-                        log c("  #{query} ", :black)
+                        debug c("  #{query} ", :black)
                         list = imap_search(query)
                         logger.raw c("#{list.length} messages\n", :blue)
                       end
