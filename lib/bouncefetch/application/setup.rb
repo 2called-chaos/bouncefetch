@@ -102,7 +102,7 @@ module Bouncefetch
             reload_rules!
           end
         else
-          Thread.main[:app_rules] = @rules = Rules.new
+          Thread.main[:app_rules] = @rules = Rules.new(self)
 
           # load rules configs
           begin
