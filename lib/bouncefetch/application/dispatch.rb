@@ -258,22 +258,18 @@ module Bouncefetch
               end
 
               if selected
-                logger.log_with_print do
-                  logger.log_without_timestr do
-                    # search emails
-                    imap_search_headers.each do |query|
-                      imap_search(query) do |mail|
-                        may_pause
-                        may_exit
-                        mid_expunge
-                        handle_throttle
-                        handle_mail(mail)
-                        break if $force_shutdown
-                      end
-                      break if $force_shutdown
-                    end
-
+                # search emails
+                imap_search_headers.each do |query|
+                  imap_search(query) do |mail|
+                    may_pause
+                    may_exit
+                    mid_expunge
+                    handle_throttle
+                    handle_mail(mail)
+                    break if $force_shutdown
                   end
+                  break if $force_shutdown
+
                   # expunge before performing another query
                   mid_expunge(true)
                 end
