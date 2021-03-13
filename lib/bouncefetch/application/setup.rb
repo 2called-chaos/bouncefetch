@@ -81,8 +81,8 @@ module Bouncefetch
       def load_configuration!
         unless Thread.main[:app_config]
           log_perform_failsafe "Loading config and rules..." do
-            Thread.main[:app_config] = @config = Configuration.new
-            Thread.main[:app_rules] = @rules = Rules.new
+            Thread.main[:app_config] = @config = Configuration.new(self)
+            Thread.main[:app_rules] = @rules = Rules.new(self)
 
             # load all configs
             load app_config_file

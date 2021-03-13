@@ -10,9 +10,14 @@ module Bouncefetch
         end
       end
 
-      def initialize *args, &block
+      def initialize app, *args, &block
+        @app = app
         @current_store = @store = {}
         setup(nil, &block) if block
+      end
+
+      def logger
+        app.logger
       end
 
       def group name, &block
