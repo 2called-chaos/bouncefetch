@@ -149,6 +149,15 @@ module Banana
       @timestr = timestr
     end
 
+    # Calls the block after enabling the runtime indicator.
+    # It also ensures to set back the old setting after execution.
+    def log_with_timestr &block
+      timestr, @timestr = @timestr, true
+      block.call
+    ensure
+      @timestr = timestr
+    end
+
     # @return [Boolean] returns true if the log level format :debug is enabled.
     def debug?
       enabled? :debug

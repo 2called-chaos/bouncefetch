@@ -258,24 +258,44 @@ module Bouncefetch
               end
 
               if selected
-                # search emails
-                imap_search_headers.each do |query|
-                  imap_search(query) do |mail|
-                    may_pause
-                    may_exit
-                    mid_expunge
-                    handle_throttle
-                    handle_mail(mail)
-                    break if $force_shutdown
+                logger.log_with_print do
+                  logger.log_without_timestr do
+                    # search emails
+                    imap_search_headers.each do |query|
+                      handled, list = 0, []
+
+                      logger.log_with_timestr do
+                        log c("Performing query #{query} ", :black)
+                        list = imap_search(query)
+                        logger.raw c("#{list.length} messages\n", :blue)
+                      end
+
+                      list.each do |message_id|
+                        begin
+                          may_pause
+                          may_exit
+                          mid_expunge
+                          handle_throttle
+                          # unless muid_singleton.include?(message_id)
+                            # muid_singleton << message_id
+                            handle_mail(BBMail.new(self, message_id))
+                          # end
+                          handled += 1
+                          break if $force_shutdown
+                        rescue
+                          warn "#{"\n" if handled > 0}failed to load mail #{message_id} - #{$!.message}#{"\n"}"
+                        end
+                      end
+                      break if $force_shutdown
+
+                      # expunge before performing another query
+                      mid_expunge(true) if handled > 0
+                    end
+
+                    # expunge before selecting another mailbox
+                    mid_expunge(true)
                   end
-                  break if $force_shutdown
-
-                  # expunge before performing another query
-                  mid_expunge(true)
                 end
-
-                # expunge before selecting another mailbox
-                mid_expunge(true)
               end
               break if $force_shutdown
             end
