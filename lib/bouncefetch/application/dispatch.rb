@@ -273,14 +273,13 @@ module Bouncefetch
                       break if $force_shutdown
                     end
 
-                    # expunge before selecting another mailbox
-                    if !@opts[:simulate] && connected?
-                      log(c("E", :yellow))
-                      imap_bulk_expunge
-                      logger.raw "\b \b#{c("E", :magenta)}"
-                    end
                   end
+                  # expunge before performing another query
+                  mid_expunge(true)
                 end
+
+                # expunge before selecting another mailbox
+                mid_expunge(true)
               end
               break if $force_shutdown
             end

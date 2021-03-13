@@ -24,12 +24,12 @@ module Bouncefetch
       rescue NoMethodError
       end
 
-      def mid_expunge
-        return if @opts[:simulate] || cfg("general.expunge_rate") == 0
+      def mid_expunge force = false
+        return if @opts[:simulate] || (!force && cfg("general.expunge_rate") == 0)
         @mid_expunge ||= 0
         @mid_expunge += 1
 
-        if @mid_expunge > cfg("general.expunge_rate") && connected?
+        if connected? && (force || @mid_expunge > cfg("general.expunge_rate"))
           log(c("E", :yellow))
           imap_bulk_expunge
           logger.raw "\b \b#{c("E", :magenta)}"
