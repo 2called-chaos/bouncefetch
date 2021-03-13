@@ -1,7 +1,7 @@
 module Bouncefetch
   class Application
     class Configuration
-      attr_reader :store
+      attr_reader :store, :app
 
       def self.attr_assigner *names
         opts = names.extract_options!.reverse_merge(cast: nil)
