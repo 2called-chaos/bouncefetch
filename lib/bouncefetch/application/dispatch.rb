@@ -258,17 +258,14 @@ module Bouncefetch
               end
 
               if selected
+                all_handled = 0
                 logger.log_with_print do
                   logger.log_without_timestr do
                     # search emails
                     imap_search_headers.each do |query|
-                      handled, list = 0, []
-
-                      logger.log_with_timestr do
-                        debug c("?  #{query} ", :black)
-                        list = imap_search(query)
-                        logger.raw c("#{list.length} messages\n", :blue)
-                      end
+                      logger.log_with_timestr { debug c("% #{query} ", :black) }
+                      handled, list = 0, imap_search(query)
+                      logger.debug c("#{list.length} messages\n", :blue)
 
                       list.each do |message_id|
                         begin
@@ -281,6 +278,7 @@ module Bouncefetch
                             handle_mail(BBMail.new(self, message_id))
                           # end
                           handled += 1
+                          all_handled += 1
                           break if $force_shutdown
                         rescue
                           warn "#{"\n" if handled > 0}failed to load mail #{message_id} - #{$!.message}#{"\n"}"
@@ -295,7 +293,7 @@ module Bouncefetch
                     end
 
                     # expunge before selecting another mailbox
-                    mid_expunge(true)
+                    mid_expunge(true) if all_handled > 0
                   end
                 end
               end
