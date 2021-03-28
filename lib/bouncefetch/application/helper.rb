@@ -54,7 +54,7 @@ module Bouncefetch
       def inspect_mail mail
         return unless opts[:inspect]
         logger.ensure_method(:puts) do
-          log ""
+          ENV["BF_CLEAR"] ? print(`clear`) : log("")
           log c("=============================================", :blue)
           log "Type " << c("info", :magenta) << c(" to get a brief overview of the current mail.")
           log "Type " << c("now?", :magenta) << c(" to reload rules and check if mail matches now.")
