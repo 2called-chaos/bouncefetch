@@ -16,7 +16,7 @@ module Bouncefetch
       if cache && cached_body = cache[body_cache_id(plain)]
         return cached_body
       end
-      r = mail.body.decoded.force_encoding("UTF-8")
+      r = mail.body.decoded.to_s.dup.force_encoding("UTF-8")
       r = r.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: ' ')
       r = r.gsub("=\n", "") # soft line breaks
       r = r.downcase if !plain && @opts[:downcase]
