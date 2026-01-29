@@ -57,7 +57,7 @@ Bouncefetch.configure do
 
   # Settings for the registry which keeps track of the clients.
   group :registry do
-    set :file, "registry.dat"
+    set :file, "data/registry.dat"
 
     # After how many days should we forget clients?
     # Dont set this too high or temporary failures will accumulate.

@@ -4,5 +4,10 @@
 /tmp
 /config/config.rb
 /config/custom_rules.rb
-/registry*.dat
 /vendor/bundle
+
+/data/*
+!/data/.keep
+
+# legacy (lives in data now)
+/registry*.dat
