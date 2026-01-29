@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 source "https://www.rubygems.org"
 
-# core
-gem 'pry'
-gem 'mail'
+gem "pry"
+gem "benchmark"
+gem "mail"
