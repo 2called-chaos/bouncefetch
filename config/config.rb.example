@@ -6,6 +6,8 @@ Bouncefetch.configure do
   # search options at the bottom. See README.md for more info on this.
   set :identification_header, "X-My-Unique-Ref-ID"
 
+  # Record and display stats for rules (invocations, hit/miss, runtime)
+  set :benchmark_rules, true
 
   # General settings (application behaviour, debug, etc.)
   group :general do

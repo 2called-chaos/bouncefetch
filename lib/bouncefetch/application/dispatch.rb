@@ -304,6 +304,21 @@ module Bouncefetch
           ensure
             log ""
             @stats.render.each {|l| log(l) }
+
+            if Thread.main[:app_benchmark_rules]
+              log ""
+              rules.get("bfetch").each do |type, rdata|
+                next unless rdata[:rules]
+
+                puts c("#{type}", :magenta)
+                rdata[:rules].each do |rule|
+                  puts "  #{c(rule.cond, :blue)}"
+                  rule.stats.each do |k, v|
+                    puts "    #{c(v.to_s.rjust(5), :yellow)} #{c(k, :aqua)}"
+                  end
+                end
+              end
+            end
           end
         end
       end

@@ -82,6 +82,7 @@ module Bouncefetch
         unless Thread.main[:app_config]
           log_perform_failsafe "Loading config and rules..." do
             Thread.main[:app_config] = @config = Configuration.new(self)
+            Thread.main[:app_benchmark_rules] = @config.store.dig(:bfetch, :benchmark_rules)
             Thread.main[:app_rules] = @rules = Rules.new(self)
 
             # load all configs
