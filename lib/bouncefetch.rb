@@ -10,6 +10,7 @@ require "fileutils"
 require "cgi"
 require "date"
 require "mail"
+require "net/imap"
 
 # candidate export
 require "json"
