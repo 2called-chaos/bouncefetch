@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Bouncefetch
   class Application
     class Configuration
@@ -22,7 +24,8 @@ module Bouncefetch
 
       def group name, &block
         old_store, @current_store = @current_store, @current_store[name.to_sym] ||= {}
-        block.call(@current_store) if block
+        block&.call(@current_store)
+      ensure
         @current_store = old_store
       end
 
@@ -41,7 +44,7 @@ module Bouncefetch
       end
 
       def get address, default = nil
-        r = address.split(".").inject(@store) {|cfg, sub| cfg = cfg.try(:[], sub.to_sym) }
+        r = address.split(".").inject(@store) {|cfg, sub| cfg&.dig(sub.to_sym) }
         r.nil? ? default : r
       end
 

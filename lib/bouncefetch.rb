@@ -28,7 +28,6 @@ module Bouncefetch
 end
 
 require "active_support/core_ext/object/blank"
-require "active_support/core_ext/object/try"
 require "active_support/core_ext/string/filter"
 require "banana/logger"
 

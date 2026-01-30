@@ -80,7 +80,7 @@ module Bouncefetch
       if header = app.cfg("identification_header").presence
         result = raw.body.to_s.match(/#{header}: (.*)/i)[1].strip rescue nil
       end
-      result ||= raw.header["X-Failed-Recipients"].try(:value)
+      result ||= raw.header["X-Failed-Recipients"]&.value
       result
     end
 

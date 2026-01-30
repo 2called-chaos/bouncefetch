@@ -17,7 +17,7 @@ module Bouncefetch
       def graceful opts = {}, &block
         begin
           opts = { expunge: true, registry: true }.merge(opts)
-          block.try(:call)
+          block&.call
         ensure
           # graceful shutdown
           begin
