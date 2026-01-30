@@ -1,22 +1,26 @@
+# frozen_string_literal: true
+
+# core
 require "benchmark"
 require "pathname"
 require "optparse"
-require "ostruct"
+require "base64"
 require "fileutils"
+
+require "cgi"
 require "date"
+require "mail"
+
+# candidate export
 require "json"
 require "csv"
-require "cgi"
-require "base64"
 require "net/http"
-require "net/imap"
-require "mail"
+
 begin ; require "pry" ; rescue LoadError ; end
 
 module Bouncefetch
-  ROOT = Pathname.new(File.expand_path("../..", __FILE__))
-  BASH_ENABLED = "#{ENV["SHELL"]}".downcase["bash"]
-  $:.unshift "#{ROOT}/lib"
+  ROOT = Pathname.new(File.expand_path("..", __dir__))
+  BASH_ENABLED = ENV.fetch("SHELL", nil)&.downcase&.include?("bash")
 
   def self.configure *args, &block
     Thread.main[:app_config].setup(*args, &block)
@@ -27,22 +31,22 @@ module Bouncefetch
   end
 end
 
-require "active_support/core_ext/object/blank"
-require "active_support/core_ext/string/filter"
-require "banana/logger"
+require_relative "active_support/core_ext/object/blank"
+require_relative "active_support/core_ext/string/filter"
+require_relative "banana/logger"
 
-require "bouncefetch/version"
-require "bouncefetch/rule"
-require "bouncefetch/bbmail"
-require "bouncefetch/application/setup"
-require "bouncefetch/application/configuration"
-require "bouncefetch/application/helper"
-require "bouncefetch/application/rules"
-require "bouncefetch/application/imap"
-require "bouncefetch/application/statistics"
-require "bouncefetch/application/registry"
-require "bouncefetch/application/dispatch"
-require "bouncefetch/application"
+require_relative "bouncefetch/version"
+require_relative "bouncefetch/rule"
+require_relative "bouncefetch/bbmail"
+require_relative "bouncefetch/application/setup"
+require_relative "bouncefetch/application/configuration"
+require_relative "bouncefetch/application/helper"
+require_relative "bouncefetch/application/rules"
+require_relative "bouncefetch/application/imap"
+require_relative "bouncefetch/application/statistics"
+require_relative "bouncefetch/application/registry"
+require_relative "bouncefetch/application/dispatch"
+require_relative "bouncefetch/application"
 
 
 if ARGV.shift == "dispatch"
