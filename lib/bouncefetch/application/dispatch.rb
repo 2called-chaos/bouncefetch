@@ -314,7 +314,7 @@ module Bouncefetch
                 rdata[:rules].each do |rule|
                   puts "  #{c(rule.cond, :blue)}"
                   rule.stats.each do |k, v|
-                    puts "    #{c(v.to_s.rjust(5), :yellow)} #{c(k, :aqua)}"
+                    puts "    #{c(v.to_s.rjust(5), :yellow)} #{c(k, :cyan)}"
                   end
                 end
               end
