@@ -46,7 +46,7 @@ module Bouncefetch
             logger.raw c("DONE", :green)
           rescue StandardError => ex
             logger.raw c("FAILED (#{ex.message.strip})", :red)
-            ex.backtrace.each{|l| err c("  > #{l}", :red) }
+            ex.backtrace.each{|l| warn "  > #{l}" }
           end
         end
         ret

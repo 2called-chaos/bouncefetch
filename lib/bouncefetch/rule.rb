@@ -26,7 +26,7 @@ module Bouncefetch
       @cond = @cond.downcase if @cond.is_a?(String) && @opts[:downcase]
 
       if args.length > 0
-        warn "Deprecation: #{args} passed to rule, please use crosscheck: keyword argument"
+        Thread.main.app_logger.info "Deprecation: #{args} passed to rule, please use crosscheck: keyword argument"
         @crosscheck = args.shift
       end
     end
