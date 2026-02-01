@@ -307,7 +307,7 @@ module Bouncefetch
 
             if Thread.main[:app_benchmark_rules]
               log ""
-              sorted_rule_benchmarks(csv: "#{ROOT}/data/rule_benchmark.csv") do |stat|
+              sorted_rule_benchmarks(csv: "#{ROOT}/data/rule_benchmark.csv") do |sid, stat|
                 puts "#{c("#{stat[:type]}", :magenta)} #{c(stat[:cond], :blue)}"
                 stat.except(:type, :cond).each do |k, v|
                   puts "    #{c(v.to_s.rjust(5), :yellow)} #{c(k, :cyan)}"
