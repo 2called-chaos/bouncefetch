@@ -1,6 +1,6 @@
 # Encoding: utf-8
 module Bouncefetch
-  class PresentedMail < ::Mail
+  class PresentedMail < ::Mail::Message
     def initialize *args, **kw, &block
       super
       @bb_cache = {}
