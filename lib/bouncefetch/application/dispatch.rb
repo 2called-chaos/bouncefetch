@@ -307,14 +307,19 @@ module Bouncefetch
 
             if Thread.main[:app_benchmark_rules]
               log ""
-              rules.get("bfetch").each do |type, rdata|
-                next unless rdata[:rules]
+              CSV.open("#{ROOT}/data/rule_benchmark.csv", "wb") do |csv|
+                csv << ["type", "rule", "rt", "invocations", "miss", "hit"]
+                rules.get("bfetch").each do |type, rdata|
+                  next unless rdata[:rules]
 
-                puts c("#{type}", :magenta)
-                rdata[:rules].each do |rule|
-                  puts "  #{c(rule.cond, :blue)}"
-                  rule.stats.each do |k, v|
-                    puts "    #{c(v.to_s.rjust(5), :yellow)} #{c(k, :cyan)}"
+                  puts c("#{type}", :magenta)
+                  rdata[:rules].sort_by{|r| r.stats[:rt] }.each do |rule|
+                    puts "  #{c(rule.cond, :blue)}"
+                    rule.stats.each do |k, v|
+                      puts "    #{c(v.to_s.rjust(5), :yellow)} #{c(k, :cyan)}"
+                    end
+
+                    csv << [type, rule.cond.to_s, rule.stats[:rt], rule.stats[:invocations], rule.stats[:miss], rule.stats[:hit]]
                   end
                 end
               end
