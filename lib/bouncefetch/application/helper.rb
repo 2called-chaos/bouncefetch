@@ -107,6 +107,38 @@ module Bouncefetch
         end
       end
 
+      def sorted_rule_benchmarks csv: true, &each_result
+        stats = {}
+        rules.get("bfetch").each do |type, rdata|
+          next unless rdata[:rules]
+
+          rdata[:rules].each do |rule|
+            sub = {}
+            sub[:type] = type
+            sub[:cond] = rule.cond.to_s
+            sub[:rt] = rule.stats[:rt]
+            sub[:rt_1k] = (sub[:rt].to_f / sub[:invocations].to_f) * 1000
+            sub[:invocations] = rule.stats[:invocations]
+            sub[:miss] = rule.stats[:miss]
+            sub[:miss_rat] = rule.stats[:miss].to_f / rule.stats[:invocations].to_f
+            sub[:hit] = rule.stats[:hit]
+            sub[:hit_rat] = rule.stats[:hit].to_f / rule.stats[:invocations].to_f
+            sub[:h2m_rat] = rule.stats[:hit].to_f / rule.stats[:miss].to_f
+            stats["#{sub[:type]}|#{sub[:cond]}"] = sub
+          end
+        end
+
+        sorted = stats.sort_by{|r| r.stats[:rt] }
+        sorted.each(&each_result) if each_result
+
+        CSV.open(csv, "wb") do |writer|
+          writer << sorted.first.keys
+          sorted.each{|data| writer << data.values }
+        end if csv
+
+        return sorted
+      end
+
       def candidates_to_array candidates, rows = []
         [].tap do |ary|
           # header
