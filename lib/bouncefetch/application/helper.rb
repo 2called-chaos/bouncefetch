@@ -129,7 +129,7 @@ module Bouncefetch
           end
         end
 
-        sorted = stats.sort_by{|k, r| r[:rt] }
+        sorted = stats.sort_by{|k, r| r[:rt] }.to_h
         sorted.each(&each_result) if each_result
 
         CSV.open(csv, "wb") do |writer|
