@@ -4,7 +4,7 @@ module Bouncefetch
   class Rule
     attr_reader :cond, :on, :crosscheck, :opts, :stats
 
-    def initialize condition, *args, on: :body, crosscheck: true, body: nil, subject: nil, **opts, &block
+    def initialize *args, on: :body, crosscheck: true, body: nil, subject: nil, **opts, &block
       @opts = { downcase: true, oneline: false, squish: true }.merge(opts)
       @stats = Hash.new(0)
       @crosscheck = crosscheck
