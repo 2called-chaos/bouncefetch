@@ -8,7 +8,7 @@ module Bouncefetch
 
     def normalized_subject
       @bb_cache[:normalized_subject] ||= begin
-        m.subject.to_s.force_encoding("UTF-8").squish
+        subject.to_s.force_encoding("UTF-8").squish
       end
     end
     alias_method :subjectN, :normalized_subject
@@ -24,7 +24,7 @@ module Bouncefetch
 
     def normalized_body
       @bb_cache[:normalized_body] ||= begin
-        raw.body.decoded
+        body.decoded
           .to_s.dup
           .force_encoding("UTF-8")
           .encode("UTF-8", "binary", invalid: :replace, undef: :replace, replace: " ")
