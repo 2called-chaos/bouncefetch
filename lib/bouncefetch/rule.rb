@@ -2,32 +2,65 @@
 
 module Bouncefetch
   class Rule
-    attr_reader :cond, :crosscheck, :opts, :stats
+    attr_reader :cond, :on, :crosscheck, :opts, :stats
 
-    def initialize condition, crosscheck = true, opts = {}
+    def initialize condition, *args, on: :body, crosscheck: true, body: nil, subject: nil, **opts, &block
       @opts = { downcase: true, oneline: false, squish: true }.merge(opts)
-      @cond = condition
-      @crosscheck = crosscheck
       @stats = Hash.new(0)
-    end
+      @crosscheck = crosscheck
+      @on = on
 
-    def body_cache_id plain = false
-      @opts.slice(:downcase, :oneline, :squish).merge(plain: plain).to_json
-    end
-
-    def normalized_body mail, plain = false, cache = nil
-      if cache && cached_body = cache[body_cache_id(plain)]
-        return cached_body
+      if block
+        @cond = block
+      elsif body
+        @cond = body
+        @on = :body
+      elsif subject
+        @cond = subject
+        @on = :subject
+      elsif args.length > 0
+        # warn "Deprecation: please pass either body: or subject: keyword argument for condition"
+        @cond = args.shift
       end
 
-      r = mail.body.decoded.to_s.dup.force_encoding("UTF-8")
-      r = r.encode("UTF-8", "binary", invalid: :replace, undef: :replace, replace: " ")
-      r = r.gsub("=\n", "") # soft line breaks
-      r = r.downcase if !plain && @opts[:downcase]
-      r = r.squish if !plain && @opts[:squish]
-      r = r.tr("\n", " ").tr("\r", "") if !plain && @opts[:oneline]
+      @cond = @cond.downcase if @cond.is_a?(String) && @opts[:downcase]
 
-      cache ? cache[body_cache_id(plain)] = r.freeze : r
+      if args.length > 0
+        warn "Deprecation: #{args} passed to rule, please use crosscheck: keyword argument"
+        @crosscheck = args.shift
+      end
+    end
+
+    def cache_id
+      @opts.slice(:downcase, :oneline, :squish).merge(on: @on).to_json
+    end
+
+    def normalized_value mail, plain: false, cache: nil
+      if @on == :body
+        return mail.normalized_body if plain
+
+        if cache && (cid = cache_id) && cached_value = cache[cid]
+          return cached_value
+        end
+
+        r = @opts[:downcase] ? mail.downcased_body : mail.normalized_body
+        r = r.squish if @opts[:squish]
+        r = r.tr("\n", " ").tr("\r", "") if @opts[:oneline]
+
+        cache ? cache[cid] = r.freeze : r
+      elsif @on == :subject
+        return mail.normalized_subject if plain
+
+        if cache && (cid = cache_id) && cached_value = cache[cid]
+          return cached_value
+        end
+
+        r = @opts[:downcase] ? mail.downcased_subject : mail.normalized_subject
+        r = r.squish if @opts[:squish]
+        r = r.tr("\n", " ").tr("\r", "") if @opts[:oneline]
+
+        cache ? cache[cid] = r.freeze : r
+      end
     end
 
     def match? *args, **kw
@@ -46,9 +79,9 @@ module Bouncefetch
 
     def match_without_stats? mail, cache = nil
       case @cond
-        when String       then normalized_body(mail, false, cache)[@cond.to_s.downcase]
-        when Regexp       then normalized_body(mail, true, cache).match(@cond)
-        when Proc, Lambda then @cond[mail, normalized_body(mail, false, cache)]
+        when String       then normalized_value(mail, cache: cache)[@cond]
+        when Regexp       then normalized_value(mail, cache: cache).match(@cond)
+        when Proc, Lambda then @cond[mail, normalized_value(mail, cache: cache)]
         else raise(ArgumentError, "unknown condition type #{@cond.class}")
       end
     end

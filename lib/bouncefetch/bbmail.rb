@@ -12,15 +12,7 @@ module Bouncefetch
 
     def load!
       fetchdata = app.connection.uid_fetch(uid, "RFC822")[0]
-      @raw = Mail.new(fetchdata.attr["RFC822"])
-    end
-
-    def mbody stripped = false
-      body = raw.body.decoded.force_encoding("UTF-8")
-      if stripped
-        body = CGI.unescapeHTML(body.gsub(/<("[^"]*"|'[^']*'|[^'">])*>/, "").gsub(" ", "").gsub("=\n", "").strip)
-      end
-      body
+      @raw = PresentedMail.new(fetchdata.attr["RFC822"])
     end
 
     def plog msg, color = :yellow
