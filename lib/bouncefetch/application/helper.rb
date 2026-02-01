@@ -44,8 +44,9 @@ module Bouncefetch
           begin
             ret = block.call
             logger.raw c("DONE", :green)
-          rescue
-            logger.raw c("FAILED (#{$!.message.strip})", :red)
+          rescue StandardError => ex
+            logger.raw c("FAILED (#{ex.message.strip})", :red)
+            logger.raw c("        > #{ex.backtrace.last}", :red)
           end
         end
         ret
