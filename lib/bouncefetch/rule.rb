@@ -79,9 +79,9 @@ module Bouncefetch
 
     def match_without_stats? mail, cache = nil
       case @cond
-        when String       then normalized_value(mail, cache: cache)[@cond]
-        when Regexp       then normalized_value(mail, cache: cache).match(@cond)
-        when Proc, Lambda then @cond[mail, normalized_value(mail, cache: cache)]
+        when String then normalized_value(mail, cache: cache)[@cond]
+        when Regexp then normalized_value(mail, cache: cache).match(@cond)
+        when Proc   then @cond[mail, normalized_value(mail, cache: cache)]
         else raise(ArgumentError, "unknown condition type #{@cond.class}")
       end
     end
