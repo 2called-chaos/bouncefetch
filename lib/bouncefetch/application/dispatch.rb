@@ -223,11 +223,11 @@ module Bouncefetch
 
         graceful do
           connection # connect and authorize imap
-          log "Type " << c("exit", :magenta) << c(" to gracefully end the session.")
-          log "Type " << c("exit!", :magenta) << c(" to terminate session (escape loop).") << c(" WARNING: No graceful shutdown!", :red)
-          log "Type " << c("graceful_exit!", :magenta) << c(" to gracefully terminate session (escape loop).")
-          log "You have the following local variables: " << c("connection, config, registry, opts", :magenta)
-          log "You can save the registry with " << c("registry.save", :magenta) << c(" and reload it with ") << c("registry.load!", :magenta)
+          log "Type #{c("exit", :magenta)} #{c(" to gracefully end the session.")}"
+          log "Type #{c("exit!", :magenta)} #{c(" to terminate session (escape loop).")} #{c(" WARNING: No graceful shutdown!", :red)}"
+          log "Type #{c("graceful_exit!", :magenta)} #{c(" to gracefully terminate session (escape loop).")}"
+          log "You have the following local variables: #{c("connection, config, registry, opts", :magenta)}"
+          log "You can save the registry with #{c("registry.save", :magenta)} #{c(" and reload it with ")} #{c("registry.load!", :magenta)}"
           binding.respond_to?(:pry) ? binding.pry(quiet: true) : binding.irb
         end
       end
