@@ -178,5 +178,6 @@ Bouncefetch.rules do
   end
 
   type :uncertain do
+    # who knows?
   end
 end

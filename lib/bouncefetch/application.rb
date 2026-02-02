@@ -71,7 +71,7 @@ module Bouncefetch
     end
 
     def ask question
-      logger.log_with_print(false) do
+      logger.log_with_print(clear: false) do
         log c("#{question} ", :blue)
         $stdout.flush
         $stdin.gets.chomp

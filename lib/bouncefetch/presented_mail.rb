@@ -23,6 +23,7 @@ module Bouncefetch
 
     # ---
 
+    # rubocop:disable Performance/StringReplacement
     def normalized_body
       @bb_cache[:normalized_body] ||= begin
         tmp = body.decoded.to_s.dup
@@ -34,6 +35,7 @@ module Bouncefetch
       end
     end
     alias_method :bodyN, :normalized_body
+    # rubocop:enable Performance/StringReplacement
 
     def downcased_body
       @bb_cache[:downcased_body] ||= normalized_body.downcase

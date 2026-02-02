@@ -246,7 +246,7 @@ module Bouncefetch
               next unless imap_select_mailbox(mailbox, status: "#{i + 1}/#{mailboxes.length}")
 
               all_handled = 0
-              logger.log_with_print(!logger.debug?) do
+              logger.log_with_print(clear: !logger.debug?) do
                 logger.log_without_timestr do
                   # search emails
                   imap_search_headers.each do |query|

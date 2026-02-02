@@ -133,7 +133,7 @@ module Banana
     #
     # @param [Boolean] clear If set to true and any message was printed inside the block
     #   a \n newline character will be printed.
-    def log_with_print clear = true, &block
+    def log_with_print clear: true, &block
       ensure_method :print do
         begin
           block.call
