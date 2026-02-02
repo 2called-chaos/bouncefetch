@@ -1,0 +1,90 @@
+plugins:
+  - rubocop-performance
+
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 3.2
+  Exclude:
+    - "vendor/bundle/**/*"
+    - "**/__*"
+    # - !ruby/regexp /old_and_unused\.rb$/
+
+
+#########################
+
+
+# Disable annoying stuff
+Layout/CaseIndentation: { Enabled: false }
+Layout/EmptyLines: { Enabled: false }
+Layout/LeadingCommentSpace: { Enabled: false }
+Layout/SpaceBeforeBlockBraces: { Enabled: false }
+Layout/SpaceBeforeSemicolon: { Enabled: false }
+Lint/AmbiguousBlockAssociation: { Enabled: false }
+Lint/AssignmentInCondition: { Enabled: false }
+Lint/Debugger: { Enabled: false }
+Lint/MixedRegexpCaptureTypes: { Enabled: false }
+Lint/UnusedBlockArgument: { Enabled: false }
+Lint/UnusedMethodArgument: { Enabled: false }
+Metrics/BlockLength: { Enabled: false }
+Naming/BlockForwarding: { Enabled: false }
+Naming/VariableNumber: { Enabled: false }
+Performance/MapMethodChain: { Enabled: false }
+Performance/RedundantBlockCall: { Enabled: false }
+Security/MarshalLoad: { Enabled: false }
+Style/ArgumentsForwarding: { Enabled: false }
+Style/ClassAndModuleChildren: { Enabled: false }
+Style/CommentedKeyword: { Enabled: false }
+Style/ConditionalAssignment: { Enabled: false }
+Style/Documentation: { Enabled: false }
+Style/EmptyClassDefinition: { Enabled: false }
+Style/EmptyMethod: { Enabled: false }
+Style/FormatString: { Enabled: false }
+Style/IfUnlessModifier: { Enabled: false }
+Style/MethodDefParentheses: { Enabled: false }
+Style/MultilineBlockChain: { Enabled: false }
+Style/MultilineIfModifier: { Enabled: false }
+Style/Next: { Enabled: false }
+Style/NumericPredicate: { Enabled: false }
+Style/ParallelAssignment: { Enabled: false }
+Style/PerlBackrefs: { Enabled: false }
+Style/RedundantArgument: { Enabled: false }
+Style/RedundantBegin: { Enabled: false }
+Style/RedundantConstantBase: { Enabled: false }
+Style/RedundantInterpolation: { Enabled: false }
+Style/RegexpLiteral: { Enabled: false }
+Style/RescueStandardError: { Enabled: false }
+Style/Semicolon: { Enabled: false }
+Style/SingleArgumentDig: { Enabled: false }
+Style/SymbolArray: { Enabled: false }
+Style/ZeroLengthPredicate: { Enabled: false }
+
+
+# Diverting from defaults
+Layout/EndAlignment: { EnforcedStyleAlignWith: start_of_line }
+Layout/FirstArrayElementIndentation: { EnforcedStyle: consistent }
+Layout/FirstHashElementIndentation: { EnforcedStyle: consistent }
+Layout/LineLength: { Max: 200 } # def 120
+Layout/MultilineMethodCallBraceLayout: { EnforcedStyle: new_line }
+Layout/MultilineMethodCallIndentation: { EnforcedStyle: indented }
+Layout/SpaceInsideBlockBraces: { SpaceBeforeBlockParameters: false, Exclude: ["spec/**/*"] }
+Metrics/AbcSize: { Max: 99 } # def 17
+Metrics/ClassLength: { Max: 250 } # def 100
+Metrics/CyclomaticComplexity: { Max: 21 } # def 7
+Metrics/MethodLength: { Max: 64 } # def 10
+Metrics/ModuleLength: { Max: 250 } # def 100
+Metrics/ParameterLists: { CountKeywordArgs: false }
+Metrics/PerceivedComplexity: { Max: 24 } # def 8
+Naming/MemoizedInstanceVariableName: { EnforcedStyleForLeadingUnderscores: required }
+Naming/MethodName: { AllowedPatterns: ['\A(body|subject)'] }
+Naming/MethodParameterName: { MinNameLength: 1 } # def 3
+Naming/RescuedExceptionsVariableName: { PreferredName: ex }
+Style/Alias: { EnforcedStyle: prefer_alias_method }
+Style/GlobalVars: { AllowedVariables: ["$force_shutdown"] }
+Style/HashSyntax: { EnforcedShorthandSyntax: either_consistent }
+Style/Lambda: { EnforcedStyle: literal }
+Style/PercentLiteralDelimiters: { PreferredDelimiters: { "default": "{}", "%i": "[]", "%I": "[]", "%r": "{}", "%w": "[]", "%W": "[]"} }
+Style/StringLiterals: { EnforcedStyle: double_quotes, Exclude: ["config/routes.rb"] }
+Style/StringLiteralsInInterpolation: { EnforcedStyle: double_quotes }
+Style/TrailingCommaInArguments: { EnforcedStyleForMultiline: comma }
+Style/TrailingCommaInArrayLiteral: { EnforcedStyleForMultiline: comma }
+Style/TrailingCommaInHashLiteral: { EnforcedStyleForMultiline: comma }
