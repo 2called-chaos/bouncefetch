@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Bouncefetch
   class Application
     class Statistics
@@ -11,10 +13,9 @@ module Bouncefetch
         @storage[key.to_sym] = {
           display: true,
           value: 0,
-          name: key.to_s.gsub("_", " "),
-          callback: block || lambda {|value, name, key, options| "#{value} #{name}"},
+          name: key.to_s.tr("_", " "),
+          callback: block || ->(value, name, key, options){ "#{value} #{name}" },
         }.merge(opts)
-        true
       end
 
       def any?
@@ -43,10 +44,14 @@ module Bouncefetch
       # @param [Integer] modify_value positive or negative number to in/decrease the value (if not passed or nil no changes will be made)
       # @return [Integer] current value (if changes are made this is the result of it)
       def method_missing key, *args, &block
-        if @storage.has_key?(key.to_sym)
-          @storage[key.to_sym][:value] += args[0] unless args[0].blank?
-          @storage[key.to_sym][:value]
-        end
+        return unless @storage.key?(key.to_sym)
+
+        @storage[key.to_sym][:value] += args[0] unless args[0].blank?
+        @storage[key.to_sym][:value]
+      end
+
+      def respond_to_missing? meth, *args
+        @storage.key?(key.to_sym)
       end
     end
   end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Bouncefetch
   class Application
     module Helper
@@ -13,7 +15,7 @@ module Bouncefetch
       end
 
       def handle_throttle
-        if @opts[:throttle_detect] && connection.instance_variable_get(:@parser).instance_variable_get(:@str)["THROTTLED"]
+        if @opts[:throttle_detect] && connection.instance_variable_get(:@parser)&.instance_variable_get(:@str)&.include?("THROTTLED")
           @throttled ||= 1
           warn "The IMAP server (probably gmail) is throttling your account! (sleep #{@throttled * 5} seconds)"
           sleep @throttled * 5
@@ -21,20 +23,21 @@ module Bouncefetch
         else
           @throttled = nil
         end
-      rescue NoMethodError
       end
 
       def mid_expunge force: false
         return if @opts[:simulate] || (!force && cfg("general.expunge_rate") == 0)
+
         @mid_expunge ||= 0
         @mid_expunge += 1
 
-        if connected? && (force || @mid_expunge > cfg("general.expunge_rate"))
-          log(c("E", :yellow))
-          imap_bulk_expunge
-          logger.raw "\b \b#{c("E", :magenta)}"
-          @mid_expunge = nil
-        end
+        return unless connected?
+        return unless force || @mid_expunge > cfg("general.expunge_rate")
+
+        log(c("E", :yellow))
+        imap_bulk_expunge
+        logger.raw "\b \b#{c("E", :magenta)}"
+        @mid_expunge = nil
       end
 
       def log_perform_failsafe what, &block
@@ -54,13 +57,14 @@ module Bouncefetch
 
       def inspect_mail mail
         return unless opts[:inspect]
+
         logger.ensure_method(:puts) do
           ENV["BF_CLEAR"] ? print(`clear`) : log("")
           log c("=============================================", :blue)
-          log "Type " << c("info", :magenta) << c(" to get a brief overview of the current mail.")
-          log "Type " << c("now?", :magenta) << c(" to reload rules and check if mail matches now.")
-          log "Type " << c("exit", :magenta) << c(" to reload the rules and continue.")
-          log "Type " << c("shutdown", :magenta) << c(" to gracefully stop the app (save reg, etc.) - DON'T use `exit!'")
+          log "Type #{c("info", :magenta)} #{c("to get a brief overview of the current mail.")}"
+          log "Type #{c("now?", :magenta)} #{c(" to reload rules and check if mail matches now.")}"
+          log "Type #{c("exit", :magenta)} #{c(" to reload the rules and continue.")}"
+          log "Type #{c("shutdown", :magenta)} #{c(" to gracefully stop the app (save reg, etc.) - DON'T use `exit!'")}"
           log c("=============================================", :blue)
           mail.info
           log c("=============================================", :blue)
@@ -74,18 +78,18 @@ module Bouncefetch
       end
 
       def pause!
-        unless @pause
-          @pause = true
-          logger.ensure_method(:puts) { logger.raw("") ; log "Finishing tasks..." }
-        end
+        return if @pause
+
+        @pause = true
+        logger.ensure_method(:puts) { logger.raw("") ; log "Finishing tasks..." }
       end
 
       def shutdown! sig = "Shutting down"
-        unless @shutdown
-          @shutdown = true
-          logger.ensure_method(:puts) { logger.raw("") ; warn "Stopping #{Process.pid} (#{sig})..." }
-          may_exit if @paused
-        end
+        return if @shutdown
+
+        @shutdown = true
+        logger.ensure_method(:puts) { logger.raw("") ; warn "Stopping #{Process.pid} (#{sig})..." }
+        may_exit if @paused
       end
 
       def graceful_exit! code = 1
@@ -98,14 +102,14 @@ module Bouncefetch
       end
 
       def may_pause
-        if @pause
-          @pause = false
-          logger.ensure_method(:puts) { logger.raw("") ; log(c("Paused (press enter to continue)", :magenta)) }
+        return unless @pause
 
-          @paused = true
-          STDIN.gets.chomp
-          @paused = false
-        end
+        @pause = false
+        logger.ensure_method(:puts) { logger.raw("") ; log(c("Paused (press enter to continue)", :magenta)) }
+
+        @paused = true
+        $stdin.gets.chomp
+        @paused = false
       end
 
       def sorted_rule_benchmarks csv: nil, &each_result
@@ -118,13 +122,13 @@ module Bouncefetch
             sub[:type] = type
             sub[:cond] = rule.cond.to_s
             sub[:rt] = rule.stats[:rt].round(6)
-            sub[:rt_1k] = (rule.stats[:rt].to_f / sub[:invocations].to_f) * 1000
+            sub[:rt_1k] = (rule.stats[:rt] / sub[:invocations].to_f) * 1000
             sub[:invocations] = rule.stats[:invocations]
             sub[:miss] = rule.stats[:miss]
-            sub[:miss_rat] = rule.stats[:miss].to_f / rule.stats[:invocations].to_f
+            sub[:miss_rat] = rule.stats[:miss] / rule.stats[:invocations].to_f
             sub[:hit] = rule.stats[:hit]
-            sub[:hit_rat] = rule.stats[:hit].to_f / rule.stats[:invocations].to_f
-            sub[:h2m_rat] = rule.stats[:hit].to_f / rule.stats[:miss].to_f
+            sub[:hit_rat] = rule.stats[:hit] / rule.stats[:invocations].to_f
+            sub[:h2m_rat] = rule.stats[:hit] / rule.stats[:miss].to_f
             stats["#{sub[:type]}|#{sub[:cond]}"] = sub
           end
         end
@@ -134,10 +138,10 @@ module Bouncefetch
 
         CSV.open(csv, "wb") do |writer|
           writer << sorted.first[1].keys
-          sorted.each{|sid, data| writer << data.values }
+          sorted.each_value{|data| writer << data.values }
         end if csv
 
-        return sorted
+        sorted
       end
 
       def candidates_to_array candidates, rows = []

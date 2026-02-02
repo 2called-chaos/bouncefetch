@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Banana
   # This class provides a simple logger which maintains and displays the runtime of the logger instance.
   # It is intended to be used with the colorize gem but it brings its own colorization to eliminate a
@@ -36,7 +38,8 @@ module Banana
   #   @return [String] Current prefix string for logged messages.
   class Logger
     attr_reader :startup, :channel, :method, :logged
-    attr_accessor :colorize, :prefix
+    attr_writer :colorize
+    attr_accessor :prefix
 
     # Foreground color values
     COLORMAP = {
@@ -48,7 +51,7 @@ module Banana
       magenta: 35,
       cyan: 36,
       white: 37,
-    }
+    }.freeze
 
     # Initializes a new logger instance. The internal runtime measurement starts here!
     #
@@ -224,20 +227,20 @@ module Banana
     # @param [Symbol] type The log level
     def log msg, type = :info
       return if !@enabled || !@levels[type][:enabled]
-      if @levels[type.to_sym] || !@levels.key?(type.to_sym)
-        time = Time.at(Time.now.utc - @startup).utc
-        timestr = @timestr ? "[#{time.strftime("%H:%M:%S.%L")} #{type.to_s.upcase}]\t" : ""
+      return unless @levels[type.to_sym]
 
-        if @colorize
-          msg = "#{colorize(timestr, @levels[type.to_sym][:color])}" <<
-                "#{@prefix}" <<
-                "#{colorize(msg, @levels[type.to_sym][:color])}"
-        else
-          msg = "#{timestr}#{@prefix}#{msg}"
-        end
-        @logged += 1
-        @channel.send(@method, msg)
+      time = Time.at(Time.now.utc - @startup).utc
+      timestr = @timestr ? "[#{time.strftime("%H:%M:%S.%L")} #{type.to_s.upcase}]\t" : ""
+
+      if @colorize
+        msg = "#{colorize(timestr, @levels[type.to_sym][:color])}" \
+              "#{@prefix}" \
+              "#{colorize(msg, @levels[type.to_sym][:color])}"
+      else
+        msg = "#{timestr}#{@prefix}#{msg}"
       end
+      @logged += 1
+      @channel.send(@method, msg)
     end
     alias_method :info, :log
 

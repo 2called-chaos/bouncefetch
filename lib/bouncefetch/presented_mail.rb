@@ -1,4 +1,5 @@
-# Encoding: utf-8
+# frozen_string_literal: true
+
 module Bouncefetch
   class PresentedMail < ::Mail::Message
     def initialize *args, **kw, &block
@@ -24,11 +25,12 @@ module Bouncefetch
 
     def normalized_body
       @bb_cache[:normalized_body] ||= begin
-        body.decoded
-          .to_s.dup
-          .force_encoding("UTF-8")
-          .encode("UTF-8", "binary", invalid: :replace, undef: :replace, replace: " ")
-          .gsub("=\n", "") # soft line breaks
+        tmp = body.decoded.to_s.dup
+        # tmp = tmp.force_encoding("UTF-8")
+        tmp.encode!("UTF-8", "binary", invalid: :replace, undef: :replace, replace: " ")
+        tmp.gsub!(" ", "")
+        tmp.gsub!("=\n", "") # soft line breaks
+        tmp
       end
     end
     alias_method :bodyN, :normalized_body
@@ -40,7 +42,9 @@ module Bouncefetch
 
     def stripped_body
       @bb_cache[:stripped_body] ||= begin
-        CGI.unescapeHTML(normalized_body.gsub(/<("[^"]*"|'[^']*'|[^'">])*>/, "").gsub(" ", "").gsub("=\n", "").strip)
+        tmp = normalized_body.gsub(/<("[^"]*"|'[^']*'|[^'">])*>/, "")
+        tmp.strip!
+        CGI.unescapeHTML(tmp)
       end
     end
     alias_method :bodyS, :stripped_body

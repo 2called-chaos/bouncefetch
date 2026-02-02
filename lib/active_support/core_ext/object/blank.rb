@@ -156,7 +156,7 @@ class String
       begin
         BLANK_RE.match?(self)
       rescue Encoding::CompatibilityError
-        ENCODED_BLANKS[self.encoding].match?(self)
+        ENCODED_BLANKS[encoding].match?(self)
       end
   end
 

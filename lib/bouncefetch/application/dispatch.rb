@@ -1,8 +1,9 @@
-# Encoding: Utf-8
+# frozen_string_literal: true
+
 module Bouncefetch
   class Application
     module Dispatch
-      def dispatch action = (@opts[:dispatch] || :help)
+      def dispatch action = @opts[:dispatch] || :help
         case action
           when :version, :info then dispatch_info
           else
@@ -20,20 +21,18 @@ module Bouncefetch
           block&.call
         ensure
           # graceful shutdown
-          begin
-            unless @opts[:simulate]
-              log_perform_failsafe("Performing IMAP expunge...") { imap_bulk_expunge } if opts[:expunge] && connected?
-              log_perform_failsafe("Saving registry...") { @registry.save } if opts[:registry] && @registry
-            end
-          rescue ; end
-          begin ; connection.logout if connected? ; rescue ; end
-          begin ; connection.disconnect if connected? ; rescue ; end
+          unless @opts[:simulate]
+            log_perform_failsafe("Performing IMAP expunge...") { imap_bulk_expunge } if opts[:expunge] && connected?
+            log_perform_failsafe("Saving registry...") { @registry.save } if opts[:registry] && @registry
+          end
+          log_perform_failsafe("IMAP logout...") { connection.logout } if connected?
+          log_perform_failsafe("IMAP disconnect...") { connection.disconnect } if connected?
         end
       end
 
       def dispatch_help_short
         logger.log_without_timestr do
-          @optparse.to_s.split("\n").each(&method(:log))
+          @optparse.to_s.split("\n").each{ log(_1) }
         end
       end
 
@@ -53,18 +52,19 @@ module Bouncefetch
 
       def dispatch_help
         logger.log_without_timestr do
-          @optparse.to_s.split("\n").each(&method(:log))
+          @optparse.to_s.split("\n").each{ log(_1) }
+
           log ""
-          log "Config directory: " << c("#{ROOT}/config", :magenta)
+          log "Config directory: #{c("#{ROOT}/config", :magenta)}"
           log ""
           log "Legend:"
-          log "  " << c("X  ", :green) << c("handled mails")
-          log "  " << c("X  ", :red) << c("handled but client not identifyable")
-          log "  " << c(".  ", :yellow) << c("ignored")
-          log "  " << c("%  ", :red) << c("deleted (follows ") << c("X", :green) << c(" or ") << c(".", :yellow) << c(")")
-          log "  " << c("?  ", :blue) << c("unmatched")
-          log "  " << c("§  ", :blue) << c("no matching crosscheck")
-          log "  " << c("E  ", :magenta) << c("performing IMAP expunge (delete marked mails)")
+          log c("  X  ", :green) << c("handled mails")
+          log c("  X  ", :red) << c("handled but client not identifyable")
+          log c("  .  ", :yellow) << c("ignored")
+          log c("  %  ", :red) << c("deleted (follows ") << c("X", :green) << c(" or ") << c(".", :yellow) << c(")")
+          log c("  ?  ", :blue) << c("unmatched")
+          log c("  §  ", :blue) << c("no matching crosscheck")
+          log c("  E  ", :magenta) << c("performing IMAP expunge (delete marked mails)")
         end
       end
 
@@ -79,18 +79,18 @@ module Bouncefetch
             if @opts[:check_for_updates]
               log c("checking...", :blue)
 
-              begin
+              status = begin
                 current_version = Gem::Version.new Net::HTTP.get_response(URI.parse(Bouncefetch::UPDATE_URL)).body.strip
 
                 if current_version > your_version
-                  status = c("#{current_version} (consider update)", :red)
+                  c("#{current_version} (consider update)", :red)
                 elsif current_version < your_version
-                  status = c("#{current_version} (ahead, beta)", :green)
+                  c("#{current_version} (ahead, beta)", :green)
                 else
-                  status = c("#{current_version} (up2date)", :green)
+                  c("#{current_version} (up2date)", :green)
                 end
-              rescue
-                status = c("failed (#{$!.message})", :red)
+              rescue StandardError => ex
+                c("failed (#{ex.message})", :red)
               end
 
               logger.raw "#{"\b" * 11}#{" " * 11}#{"\b" * 11}", :print # reset cursor
@@ -168,12 +168,12 @@ module Bouncefetch
           # write to file
           write_succeeded = false
           log_perform_failsafe("Writing CSV to file") do
-            File.open(result_file, "wb") {|file| file.write(csv) }
+            File.binwrite(result_file, csv)
             write_succeeded = true
           end
           if !opts[:simulate] && write_succeeded
             log_perform_failsafe("Removing candidates from registry") do
-              items.each {|candidate, _| registry.remove(candidate) }
+              items.each_key {|candidate| registry.remove(candidate) }
             end
           end
         end
@@ -196,12 +196,13 @@ module Bouncefetch
             end
             res = Net::HTTP.post_form URI(opts[:remote]), { "candidates" => json_data }
             raise "server responded with status code #{res.code}" if res.code.to_i != 200
+
             post_succeeded = true
           end
 
           if !opts[:simulate] && post_succeeded
             log_perform_failsafe("Removing candidates from registry") do
-              items.each {|candidate, _| registry.remove(candidate) }
+              items.each_key {|candidate| registry.remove(candidate) }
             end
           end
         end
@@ -212,7 +213,7 @@ module Bouncefetch
 
         graceful expunge: false do
           connection # connect and authorize imap
-          connection.list('', '*').each{|m| log c("#{m.name}", :magenta) }
+          connection.list("", "*").each{|m| log c("#{m.name}", :magenta) }
         end
       end
 
@@ -242,61 +243,48 @@ module Bouncefetch
 
           begin
             mailboxes.each_with_index do |mailbox, i|
-              selected = false
-              # select mailbox
-              logger.log_with_print do
-                log "Selecting #{i+1}/#{mailboxes.count} " << c("#{mailbox}", :magenta) << c("... ")
-                begin
-                  connection.select(mailbox)
-                  logger.raw c("OK", :green)
-                  status = connection.status(mailbox, ["MESSAGES", "RECENT", "UNSEEN"])
-                  logger.raw c(" (#{status["MESSAGES"]} total / #{status["RECENT"]} recent / #{status["UNSEEN"]} unseen)", :blue)
-                  selected = true
-                rescue Net::IMAP::NoResponseError
-                  logger.raw c("FAILED (#{$!.message.strip})", :red)
-                end
-              end
+              next unless imap_select_mailbox(mailbox, status: "#{i + 1}/#{mailboxes.length}")
 
-              if selected
-                all_handled = 0
-                logger.log_with_print(!logger.debug?) do
-                  logger.log_without_timestr do
-                    # search emails
-                    imap_search_headers.each do |query|
-                      logger.log_with_timestr { debug c("% #{query} ", :black) }
-                      handled, list = 0, imap_search(query)
-                      logger.debug c("#{list.length} messages\n", :blue)
+              all_handled = 0
+              logger.log_with_print(!logger.debug?) do
+                logger.log_without_timestr do
+                  # search emails
+                  imap_search_headers.each do |query|
+                    logger.log_with_timestr { debug c("% #{query} ", :black) }
+                    handled, list = 0, imap_search(query)
+                    logger.debug c("#{list.length} messages\n", :blue)
 
-                      list.each do |message_id|
-                        begin
-                          may_pause
-                          may_exit
-                          mid_expunge
-                          handle_throttle
-                          # unless muid_singleton.include?(message_id)
-                            # muid_singleton << message_id
-                            handle_mail(BBMail.new(self, message_id))
-                          # end
-                          handled += 1
-                          all_handled += 1
-                          break if $force_shutdown
-                        rescue
-                          warn "#{"\n" if handled > 0}failed to load mail #{message_id} - #{$!.message}#{"\n"}"
-                        end
+                    list.each do |message_id|
+                      begin
+                        may_pause
+                        may_exit
+                        mid_expunge
+                        handle_throttle
+                        # unless muid_singleton.include?(message_id)
+                        #   muid_singleton << message_id
+                        #   handle_mail(BBMail.new(self, message_id))
+                        # end
+                        handle_mail(BBMail.new(self, message_id))
+                        handled += 1
+                        all_handled += 1
+                        break if $force_shutdown
+                      rescue StandardError => ex
+                        warn "#{"\n" if handled > 0}failed to load mail #{message_id} - #{ex.message}\n"
                       end
-                      break if $force_shutdown
-
-                      # expunge before performing another query
-                      mid_expunge(force: true) if handled > 0
-
-                      log "\n" if handled > 0 && logger.debug?
                     end
+                    break if $force_shutdown
 
-                    # expunge before selecting another mailbox
-                    mid_expunge(force: true) if all_handled > 0
+                    # expunge before performing another query
+                    mid_expunge(force: true) if handled > 0
+
+                    log "\n" if handled > 0 && logger.debug?
                   end
+
+                  # expunge before selecting another mailbox
+                  mid_expunge(force: true) if all_handled > 0
                 end
               end
+
               break if $force_shutdown
             end
 

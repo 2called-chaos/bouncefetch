@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Bouncefetch
   class Application
     class Registry
@@ -18,7 +20,7 @@ module Bouncefetch
       end
 
       def save
-        File.open("#{@file}.tmp", "w") {|f| f.write(Marshal.dump(@storage)) }
+        File.write("#{@file}.tmp", Marshal.dump(@storage))
         FileUtils.mv("#{@file}.tmp", @file)
       end
 
@@ -61,8 +63,8 @@ module Bouncefetch
       end
 
       def handle candidate, mode, date, rule = nil
-        if @storage[candidate]
-          @storage[candidate] = nil if (@storage[candidate][:updated_at] + @opts[:lifetime]) < Date.today
+        if @storage[candidate] && (@storage[candidate][:updated_at] + @opts[:lifetime]) < Date.today
+          @storage[candidate] = nil
         end
         @storage[candidate] ||= { reasons: { soft: [], hard: [] }, hits: { soft: [], hard: [] }, updated_at: Date.today }
         @storage[candidate][:hits][mode.to_sym] << (date || Date.today).to_date.to_s
@@ -78,8 +80,8 @@ module Bouncefetch
           r_tot = @storage.length
           r_rea = reached_limit.length
           r_inv = @storage.map{|c, d| d[:reasons][:soft] + d[:reasons][:hard] }.flatten.uniq.count
-          r_hbs = @storage.map{|c, d| d[:hits][:soft].count }.inject(&:+).to_i
-          r_hbh = @storage.map{|c, d| d[:hits][:hard].count }.inject(&:+).to_i
+          r_hbs = @storage.sum{|c, d| d[:hits][:soft].count }
+          r_hbh = @storage.sum{|c, d| d[:hits][:hard].count }
           r_hbb = r_hbs + r_hbh
 
           r["Candidates (total)"] = r_tot
@@ -97,8 +99,8 @@ module Bouncefetch
           end.sort_by {|reason, count| count }.reverse[0..14]
 
           if top_reasons.any?
-            r["  "]  = ""
-            r[""]  = "=== TOP REASONS ==="
+            r["  "] = ""
+            r[""] = "=== TOP REASONS ==="
             r[" "] = ""
 
             top_reasons.each_with_index do |(reason, count), index|

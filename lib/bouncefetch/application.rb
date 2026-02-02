@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Bouncefetch
   # Logger Singleton
   MAIN_THREAD = ::Thread.main
@@ -7,7 +9,9 @@ module Bouncefetch
 
   class Application
     RetryMailMatchSignal = Class.new(::RuntimeError)
+
     attr_reader :opts, :registry, :stats, :config, :rules
+
     include Helper
     include Dispatch
     include Imap
@@ -27,7 +31,7 @@ module Bouncefetch
 
     def handle_mail bbmail
       begin
-        case match = bbmail.match?
+        case match = bbmail.match
           when nil   then bbmail.nocrosscheck!
           when false then bbmail.unmatched!
           else
@@ -43,9 +47,9 @@ module Bouncefetch
         end
       rescue RetryMailMatchSignal
         retry
-      rescue
-        warn $!.message
-        warn $!.backtrace.detect{|l| l.include?(ROOT.to_s) }
+      rescue StandardError => ex
+        warn ex.message
+        warn ex.backtrace.detect{|l| l.include?(ROOT.to_s) }
       end
     end
 
@@ -69,8 +73,8 @@ module Bouncefetch
     def ask question
       logger.log_with_print(false) do
         log c("#{question} ", :blue)
-        STDOUT.flush
-        STDIN.gets.chomp
+        $stdout.flush
+        $stdin.gets.chomp
       end
     end
   end

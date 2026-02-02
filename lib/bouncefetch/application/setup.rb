@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Bouncefetch
   class Application
     module Setup
@@ -28,6 +30,7 @@ module Bouncefetch
         yield(self)
       end
 
+      # rubocop:disable Layout/LineLength, Layout/SpaceInsideParens, Lint/UnreachableCode
       def parse_params
         @optparse = OptionParser.new do |opts|
           opts.banner = "\n    Usage: bouncefetch [options]"
@@ -66,12 +69,13 @@ module Bouncefetch
 
         begin
           @optparse.parse!(@argv)
-        rescue OptionParser::ParseError => e
-          abort(e.message)
+        rescue OptionParser::ParseError => ex
+          abort(ex.message)
           dispatch(:help_short)
           exit 1
         end
       end
+      # rubocop:enable Layout/LineLength, Layout/SpaceInsideParens, Lint/UnreachableCode
 
       def app_config_file
         fuzzy = Dir["#{ROOT}/config/*.rb"].select{|f| File.basename(f) =~ /#{@opts[:config_file]}/i }
@@ -124,13 +128,14 @@ module Bouncefetch
 
       def load_registry!
         load_configuration!
-        @registry = Registry.new(ROOT.join(cfg("registry.file")), {
+        @registry = Registry.new(
+          ROOT.join(cfg("registry.file")),
           lifetime: cfg("registry.client_lifetime"),
           soft_limit: cfg("limits.soft"),
           hard_limit: cfg("limits.hard"),
-        })
-      rescue
-        abort "Registry file is not read-/writeable or corrupted (#{$!.message})", exit: 1
+        )
+      rescue StandardError => ex
+        abort "Registry file is not read-/writeable or corrupted (#{ex.message})", exit: 1
       end
 
       def enable_signal_trapping!
