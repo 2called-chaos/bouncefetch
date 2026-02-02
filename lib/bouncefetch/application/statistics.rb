@@ -18,6 +18,15 @@ module Bouncefetch
         }.merge(opts)
       end
 
+      def benchmark key, &block
+        r0 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+        yield
+      ensure
+        if @storage.key?(key.to_sym)
+          @storage[key.to_sym][:value] += Process.clock_gettime(Process::CLOCK_MONOTONIC) - r0
+        end
+      end
+
       def any?
         @storage.any?
       end

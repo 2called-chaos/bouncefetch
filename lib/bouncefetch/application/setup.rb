@@ -27,6 +27,10 @@ module Bouncefetch
         @stats.add(:no_crosscheck_matched)  {|v, n| [c(v, :red),   c(n)].join(" ") }
         @stats.add(:unhandled_mails)        {|v, n| [c(v, :red),   c(n)].join(" ") }
 
+        @stats.add(:rt_imap)                {|v, n| [c("%.4f" % v, :black), c(n)].join(" ") }
+        @stats.add(:rt_content)             {|v, n| [c("%.4f" % v, :black), c(n)].join(" ") }
+        @stats.add(:rt_rules)               {|v, n| [c("%.4f" % (v - @stats.rt_content), :black), c(n)].join(" ") }
+
         yield(self)
       end
 

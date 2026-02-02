@@ -4,7 +4,13 @@ module Bouncefetch
   class Application
     module Imap
       def connection
-        @_connection ||= imap_connect
+        @_connection ||= @stats.benchmark(:rt_imap){ imap_connect }
+      end
+
+      def with_connection
+        @stats.benchmark(:rt_imap) do
+          yield(connection)
+        end
       end
 
       def connected?
@@ -24,8 +30,10 @@ module Bouncefetch
 
         to_remove = delete_buffer.clone
         delete_buffer.clear
-        connection.uid_store(to_remove, "+FLAGS", [:Deleted])
-        connection.expunge
+        with_connection do |imap|
+          imap.uid_store(to_remove, "+FLAGS", [:Deleted])
+          imap.expunge
+        end
       end
 
       def imap_bulk_delete ids, force: false
@@ -67,11 +75,13 @@ module Bouncefetch
         logger.log_with_print do
           log "Selecting#{" #{status}" if status} " << c("#{mailbox}", :magenta) << c("... ")
           begin
-            connection.select(mailbox)
-            logger.raw c("OK", :green)
-            status = connection.status(mailbox, %w[MESSAGES RECENT UNSEEN])
-            logger.raw c(" (#{status["MESSAGES"]} total / #{status["RECENT"]} recent / #{status["UNSEEN"]} unseen)", :blue)
-            return :ok
+            with_connection do |imap|
+              imap.select(mailbox)
+              logger.raw c("OK", :green)
+              status = imap.status(mailbox, %w[MESSAGES RECENT UNSEEN])
+              logger.raw c(" (#{status["MESSAGES"]} total / #{status["RECENT"]} recent / #{status["UNSEEN"]} unseen)", :blue)
+              return :ok
+            end
           rescue Net::IMAP::NoResponseError => ex
             logger.raw c("FAILED (#{ex.message.strip})", :red)
           end
@@ -80,7 +90,9 @@ module Bouncefetch
       end
 
       def imap_search query
-        connection.uid_search(query)
+        with_connection do |imap|
+          imap.uid_search(query)
+        end
       end
     end
   end

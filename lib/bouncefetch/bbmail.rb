@@ -12,8 +12,8 @@ module Bouncefetch
     end
 
     def load!
-      fetchdata = app.connection.uid_fetch(uid, "RFC822")[0]
-      @raw = PresentedMail.new(fetchdata.attr["RFC822"])
+      fetchdata = app.with_connection{|imap| imap.uid_fetch(uid, "RFC822")[0] }
+      @raw = PresentedMail.new(fetchdata.attr["RFC822"], bb_stats: app.stats)
     end
 
     def plog msg, color = :yellow
@@ -85,20 +85,22 @@ module Bouncefetch
     end
 
     def match cross_checks: true
-      result = false
+      app.stats.benchmark(:rt_rules) do
+        result = false
 
-      app.rules.get("bfetch").each do |type, store|
-        next if type.to_sym == :crosschecks
+        app.rules.get("bfetch").each do |type, store|
+          next if type.to_sym == :crosschecks
 
-        rules = store[:rules] || []
-        rules.each do |rule|
-          result = [type, rule] if rule.match?(@raw, cache)
+          rules = store[:rules] || []
+          rules.each do |rule|
+            result = [type, rule] if rule.match?(@raw, cache)
+            break if result
+          end
           break if result
         end
-        break if result
-      end
 
-      result && cross_checks && result[1].crosscheck && !crosscheck_match? ? nil : result
+        result && cross_checks && result[1].crosscheck && !crosscheck_match? ? nil : result
+      end
     end
 
     def info limit = 750
