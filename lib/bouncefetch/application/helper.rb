@@ -129,7 +129,8 @@ module Bouncefetch
             sub[:hit] = rule.stats[:hit]
             sub[:hit_rat] = rule.stats[:hit] / rule.stats[:invocations].to_f
             sub[:h2m_rat] = rule.stats[:hit] / rule.stats[:miss].to_f
-            stats["#{sub[:type]}|#{sub[:cond]}"] = sub
+            sub[:source_location] = rule.source_location&.join(":")
+            stats["#{sub[:type]}|#{sub[:cond]}"] = sub.compact
           end
         end
 
