@@ -19,7 +19,7 @@ module Bouncefetch
       app.log app.c("#{msg}", color)
     end
 
-    def handle! mode = :soft, rule = nil, ignore_missing_ref = false
+    def handle! mode = :soft, rule = nil, ignore_missing_ref: false
       cid = candidate
       if cid.present?
         plog "X", :green
@@ -39,16 +39,16 @@ module Bouncefetch
       end
     end
 
-    def ignore! delete = true
+    def ignore! delete: true
       plog "."
       app.stats.ignored_mails +1
       delete! if delete && app.cfg("general.remove_processed")
     end
 
-    def delete! expunge = false
+    def delete! expunge: false
       plog "%", :red
       unless app.opts[:simulate]
-        app.imap_bulk_delete(uid, expunge)
+        app.imap_bulk_delete(uid, force: expunge)
       end
       app.stats.deleted_mails +1
       true
@@ -81,7 +81,7 @@ module Bouncefetch
       rules.blank? || rules.any? {|rule| rule.match?(@raw) }
     end
 
-    def match? cross_checks = true
+    def match? cross_checks: true
       result = false
 
       app.rules.get("bfetch").each do |type, store|
@@ -99,7 +99,7 @@ module Bouncefetch
 
     def info limit = 750
       info_data = {}.tap do |r|
-        r["Matching"] = now?(false, false)
+        r["Matching"] = now?(reload_rules: true, to_log: false)
         r["Subject"] = raw.subject
         r["Multipart"] = raw.multipart?
         if raw.multipart?
@@ -129,7 +129,7 @@ module Bouncefetch
       nil
     end
 
-    def now? reload_rules = true, to_log = true
+    def now? reload_rules: true, to_log: true
       app.reload_rules! if reload_rules
       strr, res = "?", false
       case m = match?

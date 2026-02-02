@@ -130,7 +130,7 @@ module Bouncefetch
           hard_limit: cfg("limits.hard"),
         })
       rescue
-        abort "Registry file is not read-/writeable or corrupted (#{$!.message})", 1
+        abort "Registry file is not read-/writeable or corrupted (#{$!.message})", exit: 1
       end
 
       def enable_signal_trapping!

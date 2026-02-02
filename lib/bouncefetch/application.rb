@@ -20,7 +20,7 @@ module Bouncefetch
         begin
           app.dispatch
         rescue Interrupt
-          app.abort("Interrupted", 1)
+          app.abort("Interrupted", exit: 1)
         end
       end
     end
@@ -33,11 +33,11 @@ module Bouncefetch
           else
             type, rule = match
             case mode = cfg("cause_mapping")[type.to_sym]
-              when "leave"        then bbmail.ignore!(false)
+              when "leave"        then bbmail.ignore!(delete: false)
               when "ignore"       then bbmail.ignore!
-              when "soft", "hard" then bbmail.handle!(mode, rule, rule.opts.key?(:ref) ? rule.opts[:ref] : false)
-              when "soft?"        then bbmail.handle!(:soft, rule, true)
-              when "hard?"        then bbmail.handle!(:hard, rule, true)
+              when "soft", "hard" then bbmail.handle!(mode, rule, ignore_missing_ref: rule.opts.key?(:ref) ? rule.opts[:ref] : false)
+              when "soft?"        then bbmail.handle!(:soft, rule, ignore_missing_ref: true)
+              when "hard?"        then bbmail.handle!(:hard, rule, ignore_missing_ref: true)
               else raise("no cause mapping for type `#{type}'")
             end
         end

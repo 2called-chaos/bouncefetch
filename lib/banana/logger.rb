@@ -259,9 +259,9 @@ module Banana
     #
     # @param [String] msg The message to send to {#log}.
     # @param [Integer] exit_code Exits with given code or does nothing when falsy.
-    def abort msg, exit_code = false
+    def abort msg, **kw
       ensure_method(:warn) { log(msg, :abort) }
-      exit(exit_code) if exit_code
+      exit(kw[:exit]) if kw[:exit]
     end
   end
 end

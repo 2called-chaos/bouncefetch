@@ -26,7 +26,7 @@ module Bouncefetch
         connection.expunge
       end
 
-      def imap_bulk_delete ids, force = false
+      def imap_bulk_delete ids, force: false
         [*ids].each{ |i| delete_buffer << i }
         imap_bulk_expunge if force
       end
@@ -57,7 +57,7 @@ module Bouncefetch
             logger.raw c("FAILED (#{$!.message.strip})", :red)
           end
         end
-        abort("Failed to connect to IMAP server, abort", 1) if failed || !imap
+        abort("Failed to connect to IMAP server, abort", exit: 1) if failed || !imap
         imap
       end
 

@@ -9,7 +9,7 @@ module Bouncefetch
             if respond_to?("dispatch_#{action}")
               send("dispatch_#{action}")
             else
-              abort("unknown action #{action}", 1)
+              abort("unknown action #{action}", exit: 1)
             end
         end
       end
@@ -287,13 +287,13 @@ module Bouncefetch
                       break if $force_shutdown
 
                       # expunge before performing another query
-                      mid_expunge(true) if handled > 0
+                      mid_expunge(force: true) if handled > 0
 
                       log "\n" if handled > 0 && logger.debug?
                     end
 
                     # expunge before selecting another mailbox
-                    mid_expunge(true) if all_handled > 0
+                    mid_expunge(force: true) if all_handled > 0
                   end
                 end
               end

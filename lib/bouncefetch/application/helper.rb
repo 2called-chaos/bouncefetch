@@ -24,7 +24,7 @@ module Bouncefetch
       rescue NoMethodError
       end
 
-      def mid_expunge force = false
+      def mid_expunge force: false
         return if @opts[:simulate] || (!force && cfg("general.expunge_rate") == 0)
         @mid_expunge ||= 0
         @mid_expunge += 1
