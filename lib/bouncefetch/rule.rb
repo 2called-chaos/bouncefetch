@@ -83,7 +83,7 @@ module Bouncefetch
       case @cond
         when String then normalized_value(mail, cache: cache)[@cond]
         when Regexp then normalized_value(mail, cache: cache).match(@cond)
-        when Proc   then @cond[mail, normalized_value(mail, cache: cache)]
+        when Proc   then @cond[mail, normalized_value(mail, cache: cache), self]
         else raise(ArgumentError, "unknown condition type #{@cond.class}")
       end
     end
