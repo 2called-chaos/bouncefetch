@@ -101,6 +101,14 @@ module Bouncefetch
         raise Interrupt if @shutdown
       end
 
+      def may_skip
+        if @skip >= 0
+          @skip -= 1
+          return true
+        end
+        false
+      end
+
       def may_pause
         return unless @pause
 

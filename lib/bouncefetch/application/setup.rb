@@ -5,6 +5,7 @@ module Bouncefetch
     module Setup
       def initialize env, argv
         @env, @argv = env, argv
+        @skip = 0
         @opts = {
           config_file: "config",
           dispatch: :index,

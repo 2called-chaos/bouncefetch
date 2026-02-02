@@ -258,6 +258,7 @@ module Bouncefetch
                       begin
                         may_pause
                         may_exit
+                        next if may_skip
                         mid_expunge
                         handle_throttle
                         # unless muid_singleton.include?(message_id)
