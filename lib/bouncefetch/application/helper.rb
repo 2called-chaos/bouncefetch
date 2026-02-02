@@ -102,7 +102,7 @@ module Bouncefetch
       end
 
       def may_skip
-        if @skip >= 0
+        if @skip > 0
           @skip -= 1
           return true
         end
