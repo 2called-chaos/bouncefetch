@@ -26,7 +26,7 @@ module Bouncefetch
 
       if args.length > 0 && (args.last.is_a?(TrueClass) || args.last.is_a?(FalseClass))
         Thread.main.app_logger.ensure_method(:puts) do
-          Thread.main.app_logger.info "Deprecation: #{args.last} passed to rule, please use crosscheck: keyword argument"
+          Thread.main.app_logger.info "Deprecation: #{args.last} passed to rule, please use crosscheck: keyword argument (in #{source_location&.join(":") || "???"})"
         end
         @crosscheck = args.shift
       end

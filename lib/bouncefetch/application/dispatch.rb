@@ -297,7 +297,7 @@ module Bouncefetch
               if cfg("print_rules_benchmark")
                 log ""
                 sorted_rule_benchmarks(csv: ROOT.join(cfg("csv_rules_benchmark"))) do |sid, stat|
-                  puts "#{c("#{stat[:type]}", :magenta)} #{c(stat[:cond], :blue)} #{c(stat[:source_location].gsub(ROOT.to_s, "~bouncefetch~/"), :black) if stat[:source_location]}"
+                  puts "#{c("#{stat[:type]}", :magenta)} #{c(stat[:cond], :blue)} #{c(stat[:source_location].gsub(ROOT.to_s, "~bouncefetch~"), :black) if stat[:source_location]}"
                   stat.except(:type, :cond).each do |k, v|
                     puts "    #{c(v.to_s.rjust(8), :yellow)} #{c(k, :cyan)}"
                   end
