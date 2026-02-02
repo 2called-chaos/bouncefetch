@@ -116,14 +116,14 @@ There are 3 different possibilities to define a rule condition:
 
 You can also pass some options to rules:
 
-    * `crosscheck: true` whether crosscheck is required
-    * `on: :body` should the condition be checked against :subject or :body
-    * `body: CONDITION` sets on: :body and condition (you may still use the first argument as description)
-    * `subject: CONDITION` sets on: :subject and condition (you may still use the first argument as description)
-    * `downcase: true` downcases the mail body or subject and in case of string condition also the condition
-    * `squish: true` trim and squish multiple spaces into one
-    * `oneline: false` merges the body into one line
-    * any other options passed will be available in rule.opts when you use a block (see example)
+* `crosscheck: true` whether crosscheck is required
+* `on: :body` should the condition be checked against :subject or :body
+* `body: CONDITION` sets on: :body and condition (you may still use the first argument as description)
+* `subject: CONDITION` sets on: :subject and condition (you may still use the first argument as description)
+* `downcase: true` downcases the mail body or subject and in case of string condition also the condition
+* `squish: true` trim and squish multiple spaces into one
+* `oneline: false` merges the body into one line
+* any other options passed will be available in rule.opts when you use a block (see example)
 
 ```ruby
 # body includes "foo"
