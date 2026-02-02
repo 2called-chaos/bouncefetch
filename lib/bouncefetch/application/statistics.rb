@@ -35,7 +35,7 @@ module Bouncefetch
         [].tap do |o|
           @storage.each do |key, options|
             if options[:display]
-              o << options[:callback].call(options[:value].to_s, options[:name].to_s, key.to_s, options)
+              o << options[:callback].call(options[:value], options[:name].to_s, key.to_s, options)
             end
           end
         end
