@@ -14,14 +14,14 @@ of failed recipients which you can export to do whatever you want (unsubscribe, 
 * maintains an exportable database of failed recipients and their causes (no actual database required)
 * export to CSV file or post to remote http(s) endpoint (perfect for automatisation)
 * interactive inspect mode to define new rules
-* few dependencies (ruby and the mail gem (pry is optional))
+* few dependencies
 
 
 
 ## Requirements
 
 * Git (optional if you download the archive instead of cloning the repository)
-* Ruby >= 1.9.3 (2.0 highly recommended!)
+* Ruby >= 3.0 (high 2 might work, or not)
 * [Bundler](http://bundler.io) gem (`gem install bundler`)
 * IMAP credentials
 
@@ -47,6 +47,7 @@ It just contains comments so you don't have to bother with it for now.
 
 Install dependencies:
 
+    bundle config set --local without development
     bundle install
 
 **Optionally:** Make the executable available in your $PATH by either
@@ -106,18 +107,44 @@ If you can't or don't want to use this you can leave it blank and bouncefetch wi
 
 Rules are pretty easy to define. You should add them to `custom_rules.rb` so that you are able to update the shipped default set `rules.rb` without hassle. You still may want to take a look inside for examples.
 
-There are 3 different possibilities to define a rule:
+There are 3 different possibilities to define a rule condition:
 
-* **string** matches if string is in mail body (case insensitive)
-* **regexp** matches if body matches regex (use i modifier for case insensitivity)
-* **block** matches if the block returns a truethy value (yields the mail object).
+* **string** matches if string is in mail body or subject
+* **regexp** matches if body or subject matches regex
+* **block** matches if the block returns a truthy value (yields the mail object, the nomalized value and the rule object).
   You can pass a descriptive name as first argument (see the examples).
 
-You can also pass an second argument `crosscheck` which defaults to true and can be set to false. When set to false and the mail matches this rule it does not require a matching crosscheck.
+You can also pass some options to rules:
+
+    * `crosscheck: true` whether crosscheck is required
+    * `on: :body` should the condition be checked against :subject or :body
+    * `body: CONDITION` sets on: :body and condition (you may still use the first argument as description)
+    * `subject: CONDITION` sets on: :subject and condition (you may still use the first argument as description)
+    * `downcase: true` downcases the mail body or subject and in case of string condition also the condition
+    * `squish: true` trim and squish multiple spaces into one
+    * `oneline: false` merges the body into one line
+    * any other options passed will be available in rule.opts when you use a block (see example)
 
 ```ruby
-rule("foo", false)
-rule("blub", false) {|m| "…" }
+# body includes "foo"
+rule(body: "foo") or rule("foo")
+
+# subject includes "foo"
+rule(subject: /\bfoo\b/)
+
+# block form
+rule("when block then this is descriptive at best", crosscheck: false, bad_word: "foo") do |mail, input, rule|
+    # input is body in this case, following the options (e.g. downcased, squished)
+    input.include?(rule.opts[:bad_word]) || m.downcased_subject.include?(rule.opts[:bad_word])
+
+    # mail is a presented Mail::Message object with the following methods (cached across rules)
+    #   * #subjectN  #normalized_subject
+    #   * #subjectD  #downcased_subject
+    #   * #bodyN     #normalized_body
+    #   * #bodyD     #downcased_body
+    #   * #bodyS     #stripped_body             (stripped of HTML tags with basic regex)
+    #   * #bodySD    #stripped_downcased_body
+end
 ```
 
 
