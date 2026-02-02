@@ -28,8 +28,8 @@ module Bouncefetch
     def normalized_body
       @bb_cache[:normalized_body] ||= @bb_stats.benchmark(:rt_content) do
         tmp = body.decoded.to_s.dup
-        # tmp = tmp.force_encoding("UTF-8")
-        tmp.encode!("UTF-8", "binary", invalid: :replace, undef: :replace, replace: " ")
+        tmp = tmp.force_encoding("UTF-8")
+        #tmp.encode!("UTF-8", "binary", invalid: :replace, undef: :replace, replace: " ")
         tmp.gsub!(" ", "")
         tmp.gsub!("=\n", "") # soft line breaks
         tmp
@@ -45,9 +45,10 @@ module Bouncefetch
 
     def stripped_body
       @bb_cache[:stripped_body] ||= @bb_stats.benchmark(:rt_content) do
-        tmp = normalized_body.gsub(/<("[^"]*"|'[^']*'|[^'">])*>/, "")
-        tmp.strip!
-        CGI.unescapeHTML(tmp)
+        tmp = CGI.unescapeHTML(normalized_body)
+        tmp.gsub!(/<("[^"]*"|'[^']*'|[^'">])*>/, "")
+        tmp.squish!
+        tmp
       end
     end
     alias_method :bodyS, :stripped_body
