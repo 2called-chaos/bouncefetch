@@ -58,7 +58,7 @@ module Bouncefetch
     # = Logger =
     # ==========
     [:log, :warn, :abort, :debug].each do |meth|
-      define_method meth, ->(*a, &b) { Thread.main.app_logger.send(meth, *a, &b) }
+      define_method meth, ->(*args, **kw, &block) { Thread.main.app_logger.send(meth, *args, **kw, &block) }
     end
 
     def logger
