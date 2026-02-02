@@ -10,7 +10,8 @@ module Bouncefetch
   class Application
     RetryMailMatchSignal = Class.new(::RuntimeError)
 
-    attr_reader :opts, :registry, :stats, :config, :rules, :skip
+    attr_reader :opts, :registry, :stats, :config, :rules
+    attr_accessor :skip
 
     include Helper
     include Dispatch
