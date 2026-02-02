@@ -306,12 +306,16 @@ module Bouncefetch
             @stats.render.each {|l| log(l) }
 
             if Thread.main[:app_benchmark_rules]
-              log ""
-              sorted_rule_benchmarks(csv: "#{ROOT}/data/rule_benchmark.csv") do |sid, stat|
-                puts "#{c("#{stat[:type]}", :magenta)} #{c(stat[:cond], :blue)}"
-                stat.except(:type, :cond).each do |k, v|
-                  puts "    #{c(v.to_s.rjust(5), :yellow)} #{c(k, :cyan)}"
+              if cfg("print_rules_benchmark")
+                log ""
+                sorted_rule_benchmarks(csv: ROOT.join(cfg("csv_rules_benchmark"))) do |sid, stat|
+                  puts "#{c("#{stat[:type]}", :magenta)} #{c(stat[:cond], :blue)}"
+                  stat.except(:type, :cond).each do |k, v|
+                    puts "    #{c(v.to_s.rjust(8), :yellow)} #{c(k, :cyan)}"
+                  end
                 end
+              elsif cfg("csv_rules_benchmark")
+                sorted_rule_benchmarks(csv: ROOT.join(cfg("csv_rules_benchmark")))
               end
             end
           end

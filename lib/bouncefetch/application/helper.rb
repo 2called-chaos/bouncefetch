@@ -108,7 +108,7 @@ module Bouncefetch
         end
       end
 
-      def sorted_rule_benchmarks csv: true, &each_result
+      def sorted_rule_benchmarks csv: nil, &each_result
         stats = {}
         rules.get("bfetch").each do |type, rdata|
           next unless rdata[:rules]
@@ -117,8 +117,8 @@ module Bouncefetch
             sub = {}
             sub[:type] = type
             sub[:cond] = rule.cond.to_s
-            sub[:rt] = rule.stats[:rt]
-            sub[:rt_1k] = (sub[:rt].to_f / sub[:invocations].to_f) * 1000
+            sub[:rt] = rule.stats[:rt].round(6)
+            sub[:rt_1k] = (rule.stats[:rt].to_f / sub[:invocations].to_f) * 1000
             sub[:invocations] = rule.stats[:invocations]
             sub[:miss] = rule.stats[:miss]
             sub[:miss_rat] = rule.stats[:miss].to_f / rule.stats[:invocations].to_f
@@ -133,8 +133,8 @@ module Bouncefetch
         sorted.each(&each_result) if each_result
 
         CSV.open(csv, "wb") do |writer|
-          writer << sorted.first.keys
-          sorted.each{|data| writer << data.values }
+          writer << sorted.first[1].keys
+          sorted.each{|sid, data| writer << data.values }
         end if csv
 
         return sorted
