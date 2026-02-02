@@ -103,27 +103,37 @@ module Bouncefetch
       end
     end
 
+    def _snip_body body, limit: 750
+      if ix = body.index("------ This is a copy of the message, including all the headers. ------")
+        body[0..(ix - 1)].strip
+      else
+        r["Body (snip)"] = body[0..limit].strip
+      end
+    end
+
+    def _parts_to_info parts, r, iscope: [], limit: 750
+      parts.each_with_index do |p, i|
+        next if p.main_type.in?(%w[image])
+
+        isco = iscope + [i]
+
+        if p.multipart?
+          _parts_to_info(p.parts, r, limit: limit, iscope: isco)
+        else
+          r["Part #{isco.join("/")} (#{p.main_type})"] = _snip_body(p.body.to_s, limit: limit)
+        end
+      end
+    end
+
     def info limit = 750
       info_data = {}.tap do |r|
         r["Matching"] = now?(reload_rules: true, to_log: false)
         r["Subject"] = raw.subject
         r["Multipart"] = raw.multipart?
         if raw.multipart?
-          raw.parts.each_with_index do |p, i|
-            body = p.body.to_s
-            if ix = body.index("------ This is a copy of the message, including all the headers. ------")
-              r["Part #{i}"] = body[0..(ix - 1)].strip
-            else
-              r["Part #{i}"] = body[0..limit].strip
-            end
-          end
+          _parts_to_info(raw.parts, r, limit: limit)
         else
-          body = raw.body.to_s
-          if ix = body.index("------ This is a copy of the message, including all the headers. ------")
-            r["Body (snip)"] = body[0..(ix - 1)].strip
-          else
-            r["Body (snip)"] = body[0..limit].strip
-          end
+          r["Body"] = _snip_body(raw.body.to_s, limit: limit)
         end
       end
 
