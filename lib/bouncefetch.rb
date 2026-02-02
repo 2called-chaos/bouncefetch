@@ -17,7 +17,11 @@ require "json"
 require "csv"
 require "net/http"
 
-begin ; require "pry" ; rescue LoadError ; end
+begin
+  require "pry"
+rescue LoadError
+  # pry is optional
+end
 
 module Bouncefetch
   ROOT = Pathname.new(File.expand_path("..", __dir__))

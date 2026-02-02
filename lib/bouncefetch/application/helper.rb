@@ -66,7 +66,7 @@ module Bouncefetch
           log c("=============================================", :blue)
 
           sig = catch :inspect_escape do
-            mail.instance_eval { binding.pry(quiet: true) }
+            mail.instance_eval { binding.respond_to?(:pry) ? binding.pry(quiet: true) : binding.irb }
             reload_rules!
           end
           raise RetryMailMatchSignal if sig == :retry_match

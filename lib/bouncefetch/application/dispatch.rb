@@ -227,7 +227,7 @@ module Bouncefetch
           log "Type " << c("graceful_exit!", :magenta) << c(" to gracefully terminate session (escape loop).")
           log "You have the following local variables: " << c("connection, config, registry, opts", :magenta)
           log "You can save the registry with " << c("registry.save", :magenta) << c(" and reload it with ") << c("registry.load!", :magenta)
-          binding.pry(quiet: true)
+          binding.respond_to?(:pry) ? binding.pry(quiet: true) : binding.irb
         end
       end
 
