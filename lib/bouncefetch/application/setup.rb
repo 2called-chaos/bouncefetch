@@ -18,18 +18,18 @@ module Bouncefetch
 
         # statistics
         @stats = Statistics.new
-        @stats.add(:mails_checked)          {|v, n| [c(v, :blue),  c(n)].join(" ") }
-        @stats.add(:deleted_mails)          {|v, n| [c(v, :red),   c(n)].join(" ") }
-        @stats.add(:handled_soft_bounces)   {|v, n| [c(v, :green), c(n)].join(" ") }
-        @stats.add(:handled_hard_bounces)   {|v, n| [c(v, :green), c(n)].join(" ") }
-        @stats.add(:ignored_mails)          {|v, n| [c(v, :blue),  c(n)].join(" ") }
-        @stats.add(:unidentifyable_bounces) {|v, n| [c(v, :red),   c(n)].join(" ") }
-        @stats.add(:no_crosscheck_matched)  {|v, n| [c(v, :red),   c(n)].join(" ") }
-        @stats.add(:unhandled_mails)        {|v, n| [c(v, :red),   c(n)].join(" ") }
+        @stats.add(:mails_checked)          {|v, n| [c(v.to_s.rjust(10), :blue),  c(n)].join(" ") }
+        @stats.add(:deleted_mails)          {|v, n| [c(v.to_s.rjust(10), :red),   c(n)].join(" ") }
+        @stats.add(:handled_soft_bounces)   {|v, n| [c(v.to_s.rjust(10), :green), c(n)].join(" ") }
+        @stats.add(:handled_hard_bounces)   {|v, n| [c(v.to_s.rjust(10), :green), c(n)].join(" ") }
+        @stats.add(:ignored_mails)          {|v, n| [c(v.to_s.rjust(10), :blue),  c(n)].join(" ") }
+        @stats.add(:unidentifyable_bounces) {|v, n| [c(v.to_s.rjust(10), :red),   c(n)].join(" ") }
+        @stats.add(:no_crosscheck_matched)  {|v, n| [c(v.to_s.rjust(10), :red),   c(n)].join(" ") }
+        @stats.add(:unhandled_mails)        {|v, n| [c(v.to_s.rjust(10), :red),   c(n)].join(" ") }
 
-        @stats.add(:rt_imap)                {|v, n| [c("%.4f" % v, :black), c(n)].join(" ") }
-        @stats.add(:rt_content)             {|v, n| [c("%.4f" % v, :black), c(n)].join(" ") }
-        @stats.add(:rt_rules)               {|v, n| [c("%.4f" % (v - @stats.rt_content), :black), c(n)].join(" ") }
+        @stats.add(:rt_imap)                {|v, n| [c(("%.4f" % v).rjust(10), :black), c(n)].join(" ") }
+        @stats.add(:rt_content)             {|v, n| [c(("%.4f" % v).rjust(10), :black), c(n)].join(" ") }
+        @stats.add(:rt_rules)               {|v, n| [c(("%.4f" % (v - @stats.rt_content)).rjust(10), :black), c(n)].join(" ") }
 
         yield(self)
       end

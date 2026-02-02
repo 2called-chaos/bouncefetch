@@ -306,6 +306,7 @@ module Bouncefetch
 
             log ""
             @stats.render.each {|l| log(l) }
+            log ""
           end
         end
       end

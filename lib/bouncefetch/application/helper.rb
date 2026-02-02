@@ -124,11 +124,11 @@ module Bouncefetch
             sub[:invocations] = rule.stats[:invocations]
             sub[:miss] = rule.stats[:miss]
             sub[:hit] = rule.stats[:hit]
-            sub[:rt] = rule.stats[:rt].round(6)
-            sub[:rt_1k] = (rule.stats[:rt] / sub[:invocations].to_f) * 1000
-            sub[:miss_rat] = (rule.stats[:miss] / rule.stats[:invocations].to_f).round(6)
-            sub[:hit_rat] = (rule.stats[:hit] / rule.stats[:invocations].to_f).round(6)
-            sub[:h2m_rat] = (rule.stats[:hit] / rule.stats[:miss].to_f).round(6)
+            sub[:rt] = rule.stats[:rt].round(4)
+            sub[:rt_1k] = ((rule.stats[:rt] / sub[:invocations].to_f) * 1000).round(4)
+            sub[:miss_rat] = (rule.stats[:miss] / rule.stats[:invocations].to_f).round(4)
+            sub[:hit_rat] = (rule.stats[:hit] / rule.stats[:invocations].to_f).round(4)
+            sub[:h2m_rat] = (rule.stats[:hit] / rule.stats[:miss].to_f).round(4)
             sub[:source_location] = rule.source_location&.join(":")
             stats["#{sub[:type]}|#{sub[:cond]}"] = sub.compact
           end
