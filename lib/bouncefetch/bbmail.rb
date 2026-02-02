@@ -69,7 +69,8 @@ module Bouncefetch
       result = nil
       if header = app.cfg("identification_header").presence
         begin
-          result = raw.body.to_s.match(/#{header}: (.*)/i)[1].strip
+          header_match = raw.body.to_s.match(/#{header}:( )(?<value>.*)/i)
+          result = header_match.named_captures["value"]&.strip if header_match
         rescue StandardError => ex
           plog "<CandidateError:#{ex.class}: #{ex.message}>", :red
         end
