@@ -24,7 +24,7 @@ Bouncefetch.rules do
     rule("this message was created automatically by the smtp relay on")
     rule("this message was undeliverable due to the following reason:")
     rule("your message was automatically rejected by dovecot mail delivery agent.")
-    rule{|m| m.subject =~ /returned mail: see mail body for details/i }
+    rule(subject: "returned mail: see mail body for details")
   end
 
   type :ignore do
@@ -32,10 +32,10 @@ Bouncefetch.rules do
   end
 
   type :out_of_office do
-    rule(nil, false){|m| m.subject =~ /abwesenheits-benachrichtigung/i }
-    rule(nil, false){|m| m.subject =~ /abwesenheitshinweis/i }
-    rule(nil, false){|m| m.subject =~ /abwesenheitsnotiz/i }
-    rule(nil, false){|m| m.subject =~ /vacation reply/i }
+    rule(crosscheck: false, subject: /abwesenheits-benachrichtigung/i)
+    rule(crosscheck: false, subject: /abwesenheitshinweis/i)
+    rule(crosscheck: false, subject: /abwesenheitsnotiz/i)
+    rule(crosscheck: false, subject: /vacation reply/i)
   end
 
   type :quota_exceeded do
@@ -129,7 +129,7 @@ Bouncefetch.rules do
     rule("user not local")
     rule("user unknown")
     rule(/550 user .+? unknown/i)
-    rule(/die e-mail-adresse des empf=e4ngers wurde im e\-mail\-system des empf=e4ngers/i)
+    rule("die e-mail-adresse des empf=e4ngers wurde im e-mail-system des empf=e4ngers")
     rule(/this user doesn't have a ([a-z0-9]+)\.([a-z]{1,3})(\.[a-z]{1,3})? account/i)
     rule(:domino_shit) {|m| m.multipart? && m.parts[0].body.to_s.match(/not\s+listed\s+in\s+domino\s+directory/i) }
   end
@@ -169,7 +169,7 @@ Bouncefetch.rules do
     rule("sender denied")
     rule("the recipient definitively does not want your mail")
     rule("your envelope sender has been denied")
-    rule{|m| m.subject["automatically rejected mail"] }
+    rule(subject: "automatically rejected mail")
   end
 
   type :permanent_error do
