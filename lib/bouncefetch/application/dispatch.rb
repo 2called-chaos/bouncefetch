@@ -290,9 +290,6 @@ module Bouncefetch
 
             log c("All finished!", :green)
           ensure
-            log ""
-            @stats.render.each {|l| log(l) }
-
             if Thread.main[:app_benchmark_rules]
               if cfg("print_rules_benchmark")
                 log ""
@@ -306,6 +303,9 @@ module Bouncefetch
                 sorted_rule_benchmarks(csv: ROOT.join(cfg("csv_rules_benchmark")))
               end
             end
+
+            log ""
+            @stats.render.each {|l| log(l) }
           end
         end
       end
