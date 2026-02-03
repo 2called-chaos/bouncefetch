@@ -21,19 +21,25 @@ module Bouncefetch
     # rubocop:disable Performance/StringReplacement
     def normalized_body
       @bb_cache[:normalized_body] ||= @bb_stats.benchmark(:rt_content) do
+        force_utf8 = false
         begin
           tmp = (multipart? ? text_part : body).decoded.to_s.dup
-          # tmp = tmp.force_encoding("UTF-8")
+          tmp = tmp.force_encoding("UTF-8") if force_utf8
           # tmp.encode!("UTF-8", "binary", invalid: :replace, undef: :replace, replace: " ")
           tmp.gsub!(" ", "")
           tmp.gsub!("=\n", "") # soft line breaks
           tmp.tap(&:downcase) # trigger invalid input validation
-        rescue ArgumentError
+        rescue Encoding::CompatibilityError => ex
+          unless force_utf8
+            force_utf8 = true
+            retry
+          end
+        rescue StandardError => ex
           tmp = (multipart? ? text_part : body).decoded.to_s.dup
-          # tmp = tmp.force_encoding("UTF-8")
           tmp.encode!("UTF-8", invalid: :replace, undef: :replace, replace: " ")
           tmp.gsub!(" ", "")
           tmp.gsub!("=\n", "") # soft line breaks
+          tmp.squish! # we removed potentially a lot of characters
           tmp
         end
       end

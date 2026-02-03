@@ -49,7 +49,7 @@ module Bouncefetch
       rescue RetryMailMatchSignal
         retry
       rescue StandardError => ex
-        warn ex.message
+        warn "#{ex.class} #{ex.message}"
         warn ex.backtrace.detect{|l| l.include?(ROOT.to_s) }
       end
     end
