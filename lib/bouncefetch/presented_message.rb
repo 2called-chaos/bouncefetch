@@ -23,15 +23,14 @@ module Bouncefetch
       @bb_cache[:normalized_body] ||= @bb_stats.benchmark(:rt_content) do
         begin
           tmp = (multipart? ? text_part : body).decoded.to_s.dup
-          tmp = tmp.force_encoding("UTF-8")
-          #tmp.encode!("UTF-8", "binary", invalid: :replace, undef: :replace, replace: " ")
+          # tmp = tmp.force_encoding("UTF-8")
+          # tmp.encode!("UTF-8", "binary", invalid: :replace, undef: :replace, replace: " ")
           tmp.gsub!(" ", "")
           tmp.gsub!("=\n", "") # soft line breaks
           tmp.tap(&:downcase) # trigger invalid input validation
-        rescue StandardError => ex
-          Thread.new{`say -v Zarvox Pry is ready`} ; ::Kernel.binding.pry; 1+1
-          tmp = body.decoded.to_s.dup
-          #tmp = tmp.force_encoding("UTF-8")
+        rescue ArgumentError
+          tmp = (multipart? ? text_part : body).decoded.to_s.dup
+          # tmp = tmp.force_encoding("UTF-8")
           tmp.encode!("UTF-8", invalid: :replace, undef: :replace, replace: " ")
           tmp.gsub!(" ", "")
           tmp.gsub!("=\n", "") # soft line breaks
