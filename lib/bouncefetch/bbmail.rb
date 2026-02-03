@@ -28,9 +28,9 @@ module Bouncefetch
         if part.multipart?
           _present_mail_parts(part)
         else
-          mail.instance_variable_set(:@bb_stats, app.stats)
-          mail.instance_variable_set(:@bb_cache, {})
-          mail.extend(PresentedMessage)
+          part.instance_variable_set(:@bb_stats, app.stats)
+          part.instance_variable_set(:@bb_cache, {})
+          part.extend(PresentedMessage)
         end
       end
     end
