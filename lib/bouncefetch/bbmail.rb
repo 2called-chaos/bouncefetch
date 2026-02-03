@@ -128,7 +128,7 @@ module Bouncefetch
       if ix = body.index("------ This is a copy of the message, including all the headers. ------")
         body[0..(ix - 1)].strip
       else
-        r["Body (snip)"] = body[0..limit].strip
+        body[0..limit].strip
       end
     end
 
