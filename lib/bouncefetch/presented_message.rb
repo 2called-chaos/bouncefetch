@@ -1,16 +1,10 @@
 # frozen_string_literal: true
 
 module Bouncefetch
-  class PresentedMail < ::Mail::Message
-    def initialize *args, **kw, &block
-      @bb_stats = kw.delete(:bb_stats)
-      @bb_cache = {}
-      super
-    end
-
+  module PresentedMessage
     def normalized_subject
       @bb_cache[:normalized_subject] ||= @bb_stats.benchmark(:rt_content) do
-        subject.to_s.force_encoding("UTF-8").squish
+        subject.to_s.squish
       end
     end
     alias_method :subjectN, :normalized_subject
@@ -27,12 +21,22 @@ module Bouncefetch
     # rubocop:disable Performance/StringReplacement
     def normalized_body
       @bb_cache[:normalized_body] ||= @bb_stats.benchmark(:rt_content) do
-        tmp = body.decoded.to_s.dup
-        tmp = tmp.force_encoding("UTF-8")
-        #tmp.encode!("UTF-8", "binary", invalid: :replace, undef: :replace, replace: " ")
-        tmp.gsub!(" ", "")
-        tmp.gsub!("=\n", "") # soft line breaks
-        tmp
+        begin
+          tmp = (multipart? ? text_part : body).decoded.to_s.dup
+          tmp = tmp.force_encoding("UTF-8")
+          #tmp.encode!("UTF-8", "binary", invalid: :replace, undef: :replace, replace: " ")
+          tmp.gsub!(" ", "")
+          tmp.gsub!("=\n", "") # soft line breaks
+          tmp.tap(&:downcase) # trigger invalid input validation
+        rescue StandardError => ex
+          Thread.new{`say -v Zarvox Pry is ready`} ; ::Kernel.binding.pry; 1+1
+          tmp = body.decoded.to_s.dup
+          #tmp = tmp.force_encoding("UTF-8")
+          tmp.encode!("UTF-8", invalid: :replace, undef: :replace, replace: " ")
+          tmp.gsub!(" ", "")
+          tmp.gsub!("=\n", "") # soft line breaks
+          tmp
+        end
       end
     end
     alias_method :bodyN, :normalized_body

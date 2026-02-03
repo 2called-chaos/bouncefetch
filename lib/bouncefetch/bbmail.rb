@@ -13,7 +13,26 @@ module Bouncefetch
 
     def load!
       fetchdata = app.with_connection{|imap| imap.uid_fetch(uid, "RFC822")[0] }
-      @raw = PresentedMail.new(fetchdata.attr["RFC822"], bb_stats: app.stats)
+      @raw = _present_mail Mail.new(fetchdata.attr["RFC822"])
+    end
+
+    def _present_mail mail
+      mail.instance_variable_set(:@bb_stats, app.stats)
+      mail.instance_variable_set(:@bb_cache, {})
+      mail.extend(PresentedMessage)
+      _present_mail_parts(mail) if mail.multipart?
+    end
+
+    def _present_mail_parts parent
+      parent.parts.each do |part|
+        if part.multipart?
+          _present_mail_parts(part)
+        else
+          mail.instance_variable_set(:@bb_stats, app.stats)
+          mail.instance_variable_set(:@bb_cache, {})
+          mail.extend(PresentedMessage)
+        end
+      end
     end
 
     def plog msg, color = :yellow
@@ -113,13 +132,11 @@ module Bouncefetch
 
     def _parts_to_info parts, r, iscope: [], limit: 750
       parts.each_with_index do |p, i|
-        next if p.main_type.in?(%w[image])
-
         isco = iscope + [i]
 
         if p.multipart?
           _parts_to_info(p.parts, r, limit: limit, iscope: isco)
-        else
+        elsif p.text? || p.content_type == "message/delivery-status"
           r["Part #{isco.join("/")} (#{p.main_type})"] = _snip_body(p.body.to_s, limit: limit)
         end
       end

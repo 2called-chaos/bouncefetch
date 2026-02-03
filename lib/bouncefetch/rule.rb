@@ -81,11 +81,17 @@ module Bouncefetch
     end
 
     def match_without_stats? mail, cache = nil
-      case @cond
-        when String then normalized_value(mail, cache: cache)[@cond]
-        when Regexp then normalized_value(mail, cache: cache).match(@cond)
-        when Proc   then @cond[mail, normalized_value(mail, cache: cache), self]
-        else raise(ArgumentError, "unknown condition type #{@cond.class}")
+      if mail.multipart? && @on == :body
+        mail.parts.any? do |part|
+          match_without_stats?(part, cache) if part.text? || part.content_type == "message/delivery-status"
+        end
+      else
+        case @cond
+          when String then normalized_value(mail, cache: cache)[@cond]
+          when Regexp then normalized_value(mail, cache: cache).match(@cond)
+          when Proc   then @cond[mail, normalized_value(mail, cache: cache), self]
+          else raise(ArgumentError, "unknown condition type #{@cond.class}")
+        end
       end
     end
   end
