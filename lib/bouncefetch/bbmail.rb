@@ -21,6 +21,8 @@ module Bouncefetch
       mail.instance_variable_set(:@bb_cache, {})
       mail.extend(PresentedMessage)
       _present_mail_parts(mail) if mail.multipart?
+
+      mail
     end
 
     def _present_mail_parts parent
